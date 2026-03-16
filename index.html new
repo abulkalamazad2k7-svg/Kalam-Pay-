@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Kalam Pay - Digital Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0093E9;
+            --secondary: #80D0C7;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.2);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        body {
+            margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f7f6; min-height: 100vh; color: #333; overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        #splashScreen {
+            position: fixed; width: 100%; height: 100%; background: white;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10000; transition: 0.8s;
+        }
+        #splashScreen h1 { color: var(--primary); font-size: 36px; margin-top: 15px; }
+
+        section { display: none; padding: 15px; animation: fadeIn 0.5s ease; max-width: 450px; margin: auto; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Headers without User ID display */
+        .header {
+            border-radius: 25px; padding: 30px 20px; text-align: center;
+            color: white; margin-bottom: 20px; box-shadow: var(--shadow);
+            position: relative;
+        }
+        .header h2 { margin: 0; font-size: 28px; letter-spacing: 1px; }
+        .header p { margin: 0; font-size: 13px; font-weight: 300; opacity: 0.9; margin-bottom: 10px; }
+
+        .personal-bg { background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%); }
+        .agent-bg { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .btb-bg { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
+
+        .balance-btn {
+            background: white; border: none; border-radius: 50px;
+            padding: 8px 20px; cursor: pointer; display: flex; align-items: center;
+            gap: 10px; transition: 0.3s; min-width: 150px; justify-content: center;
+            margin: 10px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .balance-btn span { color: #333; font-weight: bold; font-size: 15px; }
+
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .menu-item {
+            background: white; border-radius: 18px; padding: 18px 5px;
+            text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: 0.2s; border: 1px solid #f0f0f0;
+        }
+        .menu-item:active { transform: scale(0.92); background: #f9f9f9; }
+        .menu-item i { font-size: 24px; margin-bottom: 8px; display: block; }
+        .menu-item span { font-size: 11px; font-weight: 600; color: #444; }
+
+        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: var(--shadow); }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #777; margin-bottom: 5px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; background: #fafafa; }
+        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(0,147,233,0.3); }
+        .back-btn { background: none; border: none; color: #333; font-size: 16px; cursor: pointer; margin-bottom: 15px; font-weight: bold; }
+        .loading { opacity: 0.5; pointer-events: none; }
+        
+        .error-text { color: #ff4d4d !important; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="splashScreen">
+    <i class="fas fa-paper-plane" style="font-size: 50px; color: var(--primary);"></i>
+    <h1 style="margin-bottom: 5px;">কালাম পে</h1>
+    <p style="font-size: 12px; color: #888;">ডাক বিভাগে ডিজিটাল লেনদেন</p>
+</div>
+
+<section id="loginPage" style="display: block; background: linear-gradient(135deg, var(--primary), var(--secondary)); min-height: 100vh; max-width: 100%;">
+    <div style="text-align:center; color:white; padding: 70px 0 30px;">
+        <h1 style="font-size: 35px; margin:0; letter-spacing: 1px;">কালাম পে লগইন</h1>
+    </div>
+    <div class="card" style="margin: 0 15px;">
+        <div class="input-group">
+            <label>মোবাইল নম্বর</label>
+            <input type="tel" id="logNum" placeholder="01XXXXXXXXX" maxlength="11">
+        </div>
+        <div class="input-group">
+            <label>পিন নম্বর</label>
+            <input type="password" id="logPin" placeholder="****" maxlength="4">
+        </div>
+        <button class="btn-main" id="loginBtn" onclick="handleLogin()">প্রবেশ করুন</button>
+        <p id="logMsg" style="text-align:center; font-size:13px; margin-top:10px;"></p>
+    </div>
+</section>
+
+<section id="personalDash">
+    <div class="header personal-bg">
+        <h2>কালাম</h2>
+        <p>ডাক বিভাগে ডিজিটাল লেনদেন</p>
+        <button class="balance-btn" onclick="toggleBalance('pBal')">
+            <span id="pBal">Tap for Balance</span>
+        </button>
+    </div>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="showAction('sendmoney')"><i class="fas fa-paper-plane" style="color:#0093E9;"></i><span>Send Money</span></div>
+        <div class="menu-item" onclick="showAction('cashout')"><i class="fas fa-wallet" style="color:#0093E9;"></i><span>Cash Out</span></div>
+        <div class="menu-item" onclick="window.location.href='bill.html'"><i class="fas fa-lightbulb" style="color:#0093E9;"></i><span>Bill Pay</span></div>
+        <div class="menu-item" onclick="window.location.href='history.html'"><i class="fas fa-list-ul" style="color:#0093E9;"></i><span>History</span></div>
+        <div class="menu-item" onclick="window.location.href='more.html'"><i class="fas fa-plus-circle" style="color:#0093E9;"></i><span>More</span></div>
+        <div class="menu-item" onclick="location.reload()"><i class="fas fa-power-off" style="color:#0093E9;"></i><span>Logout</span></div>
+    </div>
+</section>
+
+<section id="agentDash">
+    <div class="header agent-bg">
+        <h2>কালাম</h2>
+        <p>ডাক বিভাগে ডিজিটাল লেনদেন</p>
+        <button class="balance-btn" onclick="toggleBalance('aBal')">
+            <span id="aBal">Tap for Balance</span>
+        </button>
+    </div>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="showAction('cashin')"><i class="fas fa-user-plus" style="color:#11998e;"></i><span>Cash In</span></div>
+        <div class="menu-item" onclick="showAction('addmoney')"><i class="fas fa-plus-circle" style="color:#11998e;"></i><span>Add Money</span></div>
+        <div class="menu-item" onclick="showAction('btb')"><i class="fas fa-sync-alt" style="color:#11998e;"></i><span>BTB Transfer</span></div>
+        <div class="menu-item" onclick="window.location.href='bill.html'"><i class="fas fa-file-invoice" style="color:#11998e;"></i><span>Bill Pay</span></div>
+        <div class="menu-item" onclick="window.location.href='history.html'"><i class="fas fa-history" style="color:#11998e;"></i><span>History</span></div>
+        <div class="menu-item" onclick="location.reload()"><i class="fas fa-sign-out-alt" style="color:#11998e;"></i><span>Logout</span></div>
+    </div>
+</section>
+
+<section id="btbDash">
+    <div class="header btb-bg">
+        <h2>কালাম</h2>
+        <p>ডাক বিভাগে ডিজিটাল লেনদেন</p>
+        <button class="balance-btn" onclick="toggleBalance('bBal')">
+            <span id="bBal">Tap for Balance</span>
+        </button>
+    </div>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="showAction('cashin')"><i class="fas fa-users-cog" style="color:#6a11cb;"></i><span>Cash In</span></div>
+        <div class="menu-item" onclick="showAction('btb')"><i class="fas fa-random" style="color:#6a11cb;"></i><span>BTB Transfer</span></div>
+        <div class="menu-item" onclick="window.location.href='bill.html'"><i class="fas fa-receipt" style="color:#6a11cb;"></i><span>Bill Pay</span></div>
+        <div class="menu-item" onclick="window.location.href='history.html'"><i class="fas fa-stream" style="color:#6a11cb;"></i><span>History</span></div>
+        <div class="menu-item" onclick="window.location.href='more.html'"><i class="fas fa-grid-2" style="color:#6a11cb;"></i><span>More</span></div>
+        <div class="menu-item" onclick="location.reload()"><i class="fas fa-lock" style="color:#6a11cb;"></i><span>Logout</span></div>
+    </div>
+</section>
+
+<section id="actionPage">
+    <button class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i> ফিরে যান</button>
+    <div class="card">
+        <h3 id="actionTitle" style="margin-top:0; color:var(--primary);">Action</h3>
+        <div class="input-group" id="targetBox">
+            <label id="targetLabel">প্রাপক নম্বর</label>
+            <input type="tel" id="targetNum" placeholder="01XXXXXXXXX">
+        </div>
+        <div class="input-group">
+            <label>পরিমাণ</label>
+            <input type="number" id="amount" placeholder="0.00">
+        </div>
+        <div class="input-group">
+            <label>পিন নম্বর</label>
+            <input type="password" id="pin" placeholder="****" maxlength="4">
+        </div>
+        <button class="btn-main" id="confirmBtn" onclick="processTransaction()">নিশ্চিত করুন</button>
+        <p id="actionMsg" style="text-align:center; margin-top:15px; font-weight:bold;"></p>
+    </div>
+</section>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMnkSUu5XaDKYvN0szhBcCIG7YzriN-EuphBZr6fB2_5U04Yi7GyIIkNC4UhVddQmnNw/exec";
+    let user = { id: "", balance: 0, type: "" };
+    let currentMode = "";
+
+    window.onload = () => {
+        setTimeout(() => {
+            const ss = document.getElementById('splashScreen');
+            ss.style.opacity = '0';
+            setTimeout(() => { ss.style.display = 'none'; }, 600);
+        }, 2000);
+    };
+
+    function handleLogin() {
+        const id = document.getElementById('logNum').value;
+        const pin = document.getElementById('logPin').value;
+        const msg = document.getElementById('logMsg');
+        const btn = document.getElementById('loginBtn');
+
+        msg.classList.remove('error-text');
+        if (!id || !pin) { 
+            msg.innerText = "নম্বর এবং পিন দিন"; 
+            msg.classList.add('error-text');
+            return; 
+        }
+        
+        msg.style.color = "white";
+        msg.innerText = "যাচাই করা হচ্ছে...";
+        btn.classList.add('loading');
+
+        fetch(`${SCRIPT_URL}?action=login&userId=${id}&pin=${pin}`)
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.remove('loading');
+                if (data.status === "SUCCESS") {
+                    user = { id: data.userId, balance: parseFloat(data.balance), type: data.userType };
+                    showDashboard();
+                } else {
+                    msg.innerText = data.message;
+                    msg.classList.add('error-text');
+                }
+            }).catch(() => {
+                msg.innerText = "নেটওয়ার্ক এরর!";
+                msg.classList.add('error-text');
+                btn.classList.remove('loading');
+            });
+    }
+
+    function showDashboard() {
+        hideAll();
+        if (user.type === "personal") {
+            document.getElementById('personalDash').style.display = 'block';
+        } else if (user.type === "agent") {
+            document.getElementById('agentDash').style.display = 'block';
+        } else if (user.type === "btb") {
+            document.getElementById('btbDash').style.display = 'block';
+        }
+    }
+
+    function toggleBalance(elementId) {
+        const el = document.getElementById(elementId);
+        if (el.innerText === "Tap for Balance") {
+            el.innerText = user.balance.toFixed(2) + " ৳";
+            setTimeout(() => { el.innerText = "Tap for Balance"; }, 3000);
+        }
+    }
+
+    function showAction(mode) {
+        currentMode = mode;
+        hideAll();
+        document.getElementById('actionPage').style.display = 'block';
+        document.getElementById('actionTitle').innerText = mode.toUpperCase().replace('BTB', 'BTB TRANSFER').replace('CASHIN', 'CASH IN').replace('CASHOUT', 'CASH OUT').replace('SENDMONEY', 'SEND MONEY').replace('ADDMONEY', 'ADD MONEY');
+        document.getElementById('actionMsg').innerText = "";
+        
+        document.getElementById('targetNum').value = "";
+        document.getElementById('amount').value = "";
+        document.getElementById('pin').value = "";
+
+        if (mode === 'cashout') {
+            document.getElementById('targetLabel').innerText = "এজেন্ট নম্বর";
+            document.getElementById('targetBox').style.display = 'block';
+        } else if (mode === 'addmoney') {
+            document.getElementById('targetBox').style.display = 'none'; 
+        } else {
+            document.getElementById('targetLabel').innerText = "প্রাপক নম্বর";
+            document.getElementById('targetBox').style.display = 'block';
+        }
+    }
+
+    function processTransaction() {
+        const target = document.getElementById('targetNum').value;
+        const amt = document.getElementById('amount').value;
+        const pin = document.getElementById('pin').value;
+        const msg = document.getElementById('actionMsg');
+        const btn = document.getElementById('confirmBtn');
+
+        if (!amt || !pin || (currentMode !== 'addmoney' && !target)) { 
+            msg.innerText = "সব তথ্য পূরণ করুন"; 
+            msg.style.color = "red"; 
+            return; 
+        }
+
+        msg.style.color = "blue";
+        msg.innerText = "প্রসেসিং হচ্ছে...";
+        btn.classList.add('loading');
+
+        let url = `${SCRIPT_URL}?action=${currentMode}&amount=${amt}`;
+        if (currentMode === 'cashin') url += `&agentId=${user.id}&agentPin=${pin}&targetId=${target}`;
+        else if (currentMode === 'sendmoney') url += `&userId=${user.id}&pin=${pin}&targetId=${target}`;
+        else if (currentMode === 'cashout') url += `&userId=${user.id}&pin=${pin}&agentId=${target}`;
+        else if (currentMode === 'btb') url += `&agentId=${user.id}&pin=${pin}&targetId=${target}`;
+        else if (currentMode === 'addmoney') url += `&userId=${user.id}&pin=${pin}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.remove('loading');
+                msg.innerText = data.message;
+                if (data.status === "SUCCESS") {
+                    msg.style.color = "green";
+                    user.balance = data.balance || user.balance;
+                    setTimeout(goBack, 2500);
+                } else {
+                    msg.style.color = "red";
+                }
+            }).catch(() => {
+                msg.innerText = "সার্ভার এরর!";
+                msg.style.color = "red";
+                btn.classList.remove('loading');
+            });
+    }
+
+    function goBack() { showDashboard(); }
+    function hideAll() { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); }
+</script>
+
+</body>
+</html>
