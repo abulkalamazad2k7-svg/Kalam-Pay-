@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transaction Search</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #00bcd4, #009688);
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      color: white;
+      margin-top: 20px;
+    }
+
+    .box {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #009688;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00796b;
+    }
+
+    .card {
+      background: white;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      text-align: left;
+    }
+
+    .notfound {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h2>📱 Transaction Search</h2>
+
+<div class="box">
+  <input type="text" id="phone" placeholder="Enter phone number">
+  <br>
+  <button onclick="searchData()">Search</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+function searchData() {
+  var phone = document.getElementById("phone").value;
+
+  var url = "https://script.google.com/macros/s/AKfycbzKvbCoHtOMANHIwTYNlY2T22pxdBqX58bRFyiX3jrJ0lORnWFuytqg53R9mx8Ul6i9qg/exec?phone=" + phone;
+
+  document.getElementById("result").innerHTML = "⏳ Loading...";
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+      let html = "";
+
+      if (!data || data.length === 0) {
+        html = "<h3 class='notfound'>❌ No Data Found</h3>";
+      } else {
+        data.forEach(item => {
+          html += `
+            <div class="card">
+              📱 Phone: ${item.phone} <br><br>
+              ⏰ Time: ${item.time} <br>
+              💳 TXN: ${item.txn} <br>
+              💰 Amount: ${item.amount} <br>
+              🔄 Status: ${item.status} <br>
+              💼 Balance: ${item.balance}
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById("result").innerHTML = html;
+    })
+    .catch(err => {
+      document.getElementById("result").innerHTML = "<h3 class='notfound'>⚠️ Error হচ্ছে</h3>";
+    });
+}
+</script>
+
+</body>
+</html>
