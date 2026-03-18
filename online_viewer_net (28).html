@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheel Game 2026</title>
+
+<style>
+body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#2c3e50; font-family:sans-serif;}
+
+#login-screen { background:#9b30ff; padding:40px; border-radius:25px; text-align:center; color:white;}
+#login-screen input { padding:12px; margin:10px 0; border-radius:8px; border:none; width:100%;}
+#login-screen button { width:100%; padding:12px; background:#ffeb3b; font-weight:bold;}
+
+.game-container { width:360px; height:650px; background:#9b30ff; border-radius:25px; padding:20px; display:none; flex-direction:column; align-items:center;}
+
+.winner-msg { width:100%; height:50px; background:white; display:flex; justify-content:center; align-items:center; font-weight:bold;}
+
+.time-circle { width:70px; height:70px; background:white; border-radius:50%; display:flex; flex-direction:column; justify-content:center; align-items:center; position:absolute; top:85px; left:15px;}
+
+.wheel-container { position:relative; margin-top:70px;}
+.arrow { position:absolute; top:-25px; left:50%; transform:translateX(-50%); border-left:12px solid transparent; border-right:12px solid transparent; border-top:30px solid white;}
+
+.wheel { width:210px; height:210px; border-radius:50%; border:6px solid #fff;
+background:conic-gradient(#ff0000 0deg 120deg,#000000 120deg 240deg,#00ff00 240deg 360deg);
+transform:rotate(0deg);
+}
+
+.bet-chips-container { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px;}
+.chip { background:#ffeb3b; padding:8px 12px; border-radius:15px; font-weight:bold; cursor:pointer;}
+.chip.active { background:white;}
+
+.options-container { display:flex; gap:15px; margin-top:20px;}
+.opt { width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center; color:white; font-weight:bold;}
+.red-btn { background:red;}
+.black-btn { background:black;}
+.green-btn { background:green;}
+
+.bottom-controls { width:100%; margin-top:auto; display:flex; justify-content:space-between;}
+.balance-box { background:#ffeb3b; padding:10px;}
+.bet-display-circle { width:70px; height:70px; background:#ffeb3b; border-radius:50%; display:flex; justify-content:center; align-items:center;}
+</style>
+</head>
+
+<body>
+
+<div id="login-screen">
+<h2>WHEEL GAME</h2>
+<input id="uId" placeholder="User ID">
+<input id="uPin" type="password" placeholder="PIN">
+<button onclick="login()">LOGIN</button>
+</div>
+
+<div class="game-container" id="game-ui">
+<div class="winner-msg" id="msg">PLACE YOUR BETS</div>
+<div class="time-circle"><span id="countdown">15</span></div>
+
+<div class="wheel-container">
+<div class="arrow"></div>
+<div class="wheel" id="wheel"></div>
+</div>
+
+<div class="bet-chips-container">
+<div class="chip active" onclick="setBet(10,this)">10</div>
+<div class="chip" onclick="setBet(20,this)">20</div>
+<div class="chip" onclick="setBet(50,this)">50</div>
+<div class="chip" onclick="setBet(100,this)">100</div>
+<div class="chip" onclick="setBet(500,this)">500</div>
+<div class="chip" onclick="setBet(10000,this)">10K</div>
+</div>
+
+<div class="options-container" id="betBtns">
+<div class="opt red-btn" onclick="placeBet('RED')">RED</div>
+<div class="opt black-btn" onclick="placeBet('BLACK')">BLACK</div>
+<div class="opt green-btn" onclick="placeBet('GREEN')">GREEN</div>
+</div>
+
+<div class="bottom-controls">
+<div class="balance-box" id="bal-display">BALANCE: 0</div>
+<div class="bet-display-circle" id="cur-bet-show">10</div>
+</div>
+</div>
+
+<script>
+
+const API_URL="https://script.google.com/macros/s/AKfycbzEOTojS06zIAPVxddI2jNf5umd3rMCvs83YvKURlPOqb1kW7wtYO_ePgTFK-8vWRm2/exec";
+
+let myData={row:0,balance:0,betColors:[]};
+let selectedAmount=10;
+let isSpinning=false;
+let currentRotation=0;
+
+// LOGIN
+async function login(){
+let r=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:"login",userId:uId.value,password:uPin.value})});
+let d=await r.json();
+
+if(d.result==="success"){
+myData.row=d.row;
+myData.balance=d.balance;
+
+document.getElementById("login-screen").style.display="none";
+document.getElementById("game-ui").style.display="flex";
+
+updateUI();
+startGlobalTimer();
+}else alert("Wrong ID");
+}
+
+// UI UPDATE
+function updateUI(){
+document.getElementById("bal-display").innerText="BALANCE: "+myData.balance;
+}
+
+// BET SELECT
+function setBet(a,el){
+selectedAmount=a;
+document.getElementById("cur-bet-show").innerText=a;
+document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+el.classList.add("active");
+}
+
+// SYNC (NO TOTAL SHOW)
+async function syncData(){
+let r=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:"sync",row:myData.row})});
+let d=await r.json();
+
+myData.balance=d.balance;
+updateUI();
+}
+
+// PLACE BET
+async function placeBet(color){
+
+if (myData.betColors.length >= 2 && !myData.betColors.includes(color)) {
+return alert("Max 2 color");
+}
+
+if (myData.balance < selectedAmount) {
+return alert("Low Balance");
+}
+
+let r=await fetch(API_URL,{
+method:'POST',
+body:JSON.stringify({action:"placeBet",row:myData.row,color:color,amount:selectedAmount})
+});
+
+let d=await r.json();
+
+if(d.result==="success"){
+if(!myData.betColors.includes(color)){
+myData.betColors.push(color);
+}
+
+myData.balance-=selectedAmount;
+updateUI();
+syncData();
+}
+}
+
+// TIMER
+function startGlobalTimer(){
+setInterval(()=>{
+
+let sec=new Date().getSeconds()%30;
+
+if(sec<15){
+if(isSpinning){
+isSpinning=false;
+myData.betColors=[];
+}
+
+document.getElementById("countdown").innerText=15-sec;
+document.getElementById("msg").innerText="PLACE BET";
+document.getElementById("betBtns").style.pointerEvents="auto";
+
+if(sec%2===0) syncData();
+
+}else{
+
+document.getElementById("countdown").innerText="GO";
+document.getElementById("betBtns").style.pointerEvents="none";
+
+if(!isSpinning){
+triggerSpin();
+document.getElementById("msg").innerText="SPINNING...";
+}
+
+}
+
+},1000);
+}
+
+// SPIN
+async function triggerSpin(){
+
+isSpinning=true;
+
+let r=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:"getWinner",row:myData.row})});
+let d=await r.json();
+
+let wheel=document.getElementById("wheel");
+
+let current=currentRotation%360;
+
+let target=d.winner==="RED"?60:d.winner==="BLACK"?180:300;
+
+target=360-target;
+
+let diff=(target-current+360)%360;
+
+currentRotation+=360*10+diff;
+
+wheel.style.transition="transform 12s cubic-bezier(0.1,0,0.1,1)";
+wheel.style.transform=`rotate(${currentRotation}deg)`;
+
+setTimeout(()=>{
+document.getElementById("msg").innerText="WINNER: "+d.winner;
+
+setTimeout(()=>syncData(),2000);
+
+},12000);
+}
+
+</script>
+
+</body>
+</html>
