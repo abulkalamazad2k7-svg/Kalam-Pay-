@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>কালাম পে - ড্যাশবোর্ড</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary: #0093E9;
+            --secondary: #80D0C7;
+            --bg-color: #f8fafc;
+            --text-dark: #2d3436;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-dark);
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #0093E9, #80D0C7);
+            padding: 50px 20px;
+            border-radius: 0 0 35px 35px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 147, 233, 0.15);
+        }
+
+        .header h2 { margin: 0; font-size: 24px; font-weight: 700; }
+        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
+
+        /* Dashboard Container */
+        .container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        /* Grid Layout */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .menu-item:active {
+            transform: scale(0.92);
+            background: #f0f7ff;
+        }
+
+        .menu-item i {
+            font-size: 26px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #0093E9, #80D0C7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-item span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        /* Special Spin Icon Color */
+        .spin-icon i {
+            background: linear-gradient(135deg, #FF512F, #DD2476);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Logout Section */
+        .footer-action {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .btn-logout {
+            background: #fff;
+            color: #e74c3c;
+            border: 1px solid #fab1a0;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover { background: #fff1f0; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>কালাম পে ব্যবহারকারী আপনাকে স্বাগতম</h2>
+        <p>নিরাপদ ডিজিটাল লেনদেন ড্যাশবোর্ড</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="menu-grid">
+            
+            <div class="menu-item" onclick="window.location.href='add_money.html'">
+                <i class="fas fa-wallet"></i>
+                <span>অ্যাড মানি</span>
+            </div>
+
+            <div class="menu-item" onclick="window.location.href='transfer.html'">
+                <i class="fas fa-paper-plane"></i>
+                <span>ট্রান্সফার</span>
+            </div>
+
+            <div class="menu-item spin-icon" onclick="window.location.href='kalam_spin.html'">
+                <i class="fas fa-gamepad"></i>
+                <span>কালাম স্পিন</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-user-circle"></i>
+                <span>প্রোফাইল</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-mobile-alt"></i>
+                <span>রিচার্জ</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>বিল পে</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-headset"></i>
+                <span>সাপোর্ট</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-bell"></i>
+                <span>নোটিশ</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-cog"></i>
+                <span>সেটিংস</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-gift"></i>
+                <span>অফার</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-users"></i>
+                <span>রেফার</span>
+            </div>
+
+            <div class="menu-item" onclick="showProgress()">
+                <i class="fas fa-shield-alt"></i>
+                <span>নিরাপত্তা</span>
+            </div>
+
+        </div>
+
+        <div class="footer-action">
+            <button class="btn-logout" onclick="window.location.href='logout.html'">
+                <i class="fas fa-power-off"></i> লগআউট
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function showProgress() {
+            Swal.fire({
+                title: 'কাজ চলমান!',
+                text: 'এই অপশনটির আপডেট কাজ এখনো চলছে। খুব শীঘ্রই এটি চালু হবে।',
+                icon: 'info',
+                confirmButtonColor: '#0093E9',
+                confirmButtonText: 'ঠিক আছে'
+            });
+        }
+    </script>
+
+</body>
+</html>
