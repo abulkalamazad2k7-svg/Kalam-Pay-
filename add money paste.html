@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>কালাম পে ২০২৬</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary: #0093E9;
+            --secondary: #80D0C7;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; min-height: 100vh; overflow-x: hidden; }
+
+        /* Splash Screen */
+        #splashScreen { 
+            position: fixed; width: 100%; height: 100%; background: white; 
+            display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; z-index: 10000; transition: 0.5s; 
+        }
+
+        /* Layout & Sections */
+        section { display: none; padding: 15px; animation: fadeIn 0.4s ease; max-width: 450px; margin: auto; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .login-card { background: white; border-radius: 30px; padding: 40px 20px; box-shadow: var(--shadow); text-align: center; margin-top: 60px; }
+        .login-logo { width: 70px; height: 70px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 35px; }
+
+        .card { background: white; border-radius: 25px; padding: 20px; box-shadow: var(--shadow); margin-top: 10px; text-align: center; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, #0093E9, #80D0C7); color: white; padding: 35px 15px; border-radius: 25px; text-align: center; position: relative; margin-bottom: 20px; }
+        .header h3 { margin: 0 0 15px 0; font-size: 22px; font-weight: 600; }
+
+        .balance-btn { background: white; border: none; border-radius: 50px; padding: 12px 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-width: 170px; transition: 0.3s; }
+        .balance-btn span { color: #333; font-weight: bold; font-size: 16px; }
+
+        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-main:disabled { background: #ccc; cursor: not-allowed; opacity: 0.5; }
+        
+        /* Dashboard Buttons */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 10px; }
+        .menu-item { background: white; border-radius: 20px; padding: 30px 10px; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; transition: 0.2s; }
+        .menu-item:active { transform: scale(0.95); }
+        .menu-item i { font-size: 35px; color: var(--primary); margin-bottom: 12px; display: block; }
+        .menu-item span { font-weight: 600; color: #444; font-size: 15px; }
+        
+        .logout-box { margin-top: 25px; text-align: center; }
+        .btn-logout { background: #fff; color: #f5222d; border: 1px solid #ffa39e; padding: 10px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-logout:hover { background: #fff1f0; }
+
+        .method-logo { width: 45px; height: 45px; object-fit: contain; margin-bottom: 8px; border-radius: 8px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; margin-bottom: 12px; box-sizing: border-box; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center;
+            align-items: center; z-index: 11000; backdrop-filter: blur(5px);
+        }
+        .notice-modal {
+            background: white; width: 85%; max-width: 350px; border-radius: 25px;
+            padding: 30px; text-align: center; position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div id="splashScreen">
+    <i class="fas fa-wallet fa-spin" style="font-size: 50px; color: var(--primary);"></i>
+    <p style="margin-top: 15px; font-weight: bold; color: #555;"> কালাম পে লোড হচ্ছে...</p>
+</div>
+
+<div id="noticeModal" class="modal-overlay">
+    <div class="notice-modal">
+        <div style="font-size: 55px; color: #0093E9; margin-bottom: 15px;"><i class="fas fa-check-circle"></i></div>
+        <div style="font-size: 22px; font-weight: bold; color: #333; margin-bottom: 10px;">লগইন সফল!</div>
+        <div class="notice-body" style="font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 25px;">
+            ট্রান্সফার ও অ্যাড মানি ড্যাশবোর্ডে আপনাকে স্বাগতম। আপনার সকল লেনদেন এখন আরও সহজ ও নিরাপদ।
+        </div>
+        <button class="btn-main" onclick="closeNotice()">ড্যাশবোর্ডে যান</button>
+    </div>
+</div>
+
+<section id="loginPage">
+    <div class="login-card">
+        <div class="login-logo"><i class="fas fa-user-shield"></i></div>
+        <h3 style="margin-bottom: 5px;">কালাম পে</h3>
+        <p style="font-size:13px; color:#888; margin-bottom:25px;">আপনার আইডি ও পিন দিয়ে প্রবেশ করুন</p>
+        <input type="tel" id="userId" placeholder="মোবাইল নম্বর">
+        <input type="password" id="userPin" placeholder="৪ ডিজিট পিন">
+        <button class="btn-main" id="loginBtn" onclick="handleLogin()">প্রবেশ করুন</button>
+    </div>
+</section>
+
+<section id="dashboard">
+    <div class="header">
+        <h3>কালাম পেতে আপনাকে স্বাগতম</h3>
+        <button class="balance-btn" onclick="toggleMainBalance()">
+            <span id="dashBalDisplay">ব্যালেন্স দেখুন</span>
+        </button>
+    </div>
+
+    <div class="menu-grid">
+        <div class="menu-item" onclick="openMethods('Add Money')">
+            <i class="fas fa-wallet"></i>
+            <span>অ্যাড মানি</span>
+        </div>
+        <div class="menu-item" onclick="openMethods('Transfer Money')">
+            <i class="fas fa-share-square" style="color: #2ecc71;"></i>
+            <span>ট্রান্সফার</span>
+        </div>
+    </div>
+
+    <div class="logout-box">
+        <button class="btn-logout" onclick="location.reload()">
+            <i class="fas fa-sign-out-alt"></i> লগআউট করুন
+        </button>
+    </div>
+</section>
+
+<section id="methodPage">
+    <button style="border:none; background:none; font-weight:bold; padding:15px 0; color:#555;" onclick="showDash()"><i class="fas fa-chevron-left"></i> ফিরে যান</button>
+    <h3 id="pageActionTitle" style="text-align: center; color: var(--primary); margin-bottom: 20px;">Method</h3>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="openForm('Bkash')"><img src="https://abulkalamazad2k7.wordpress.com/wp-content/uploads/2026/04/images-1.jpeg" class="method-logo"><span>Bkash</span></div>
+        <div class="menu-item" onclick="openForm('Nagad')"><img src="https://abulkalamazad2k7.wordpress.com/wp-content/uploads/2026/03/icon-256x256-2.png" class="method-logo"><span>Nagad</span></div>
+        <div class="menu-item" onclick="openForm('Rocket')"><img src="https://abulkalamazad2k7.wordpress.com/wp-content/uploads/2026/04/unnamed.png" class="method-logo"><span>Rocket</span></div>
+    </div>
+</section>
+
+<section id="formPage">
+    <button style="border:none; background:none; font-weight:bold; padding:15px 0; color:#555;" onclick="showMethods()"><i class="fas fa-chevron-left"></i> মেথড পরিবর্তন</button>
+    <div class="card">
+        <h3 id="formTitle" style="color: var(--primary); margin-bottom: 20px;">Form</h3>
+        <select id="accType" onchange="updateAdminNum()"><option value="Personal">Personal</option><option value="Agent">Agent</option></select>
+        
+        <div id="adminNumBox" style="background:#f0f7ff; padding:15px; border-radius:15px; margin-bottom:15px; border:1px dashed #0093E9;">
+            <small id="adminLabel" style="color:#555; display:block; margin-bottom:5px;">নম্বরটি কপি করুন</small>
+            <div id="adminNumDisplay" style="font-weight:bold; font-size:20px; color:#0093E9;">লোড হচ্ছে...</div>
+        </div>
+
+        <input type="tel" id="userNum" placeholder="আপনার নম্বর">
+        <input type="number" id="userAmt" placeholder="টাকার পরিমাণ (সর্বনিম্ন ৫০)">
+        <input type="text" id="trxId" placeholder="TrxID (ট্রানজেকশন আইডি)">
+        
+        <button class="btn-main" id="submitBtn" onclick="submitForm()" disabled>সাবমিট করুন</button>
+    </div>
+</section>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOk2EpERQ8PnbDRBLuP-qaUVyDVH8oCNpVSQGGFrfo0i_XsDZC-_JEtrjlR8JreIwnTg/exec";
+    
+    let currentUserId = "";
+    let gameBalance = 0;
+    let adminNumbersStore = {}; 
+    let currentAction = "";
+    let currentMethod = "";
+
+    window.onload = () => { 
+        setTimeout(() => {
+            document.getElementById('splashScreen').style.display = 'none';
+            hideAll();
+            document.getElementById('loginPage').style.display = 'block'; 
+        }, 1500); 
+    };
+
+    function hideAll() { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); }
+    function showDash() { hideAll(); document.getElementById('dashboard').style.display = 'block'; }
+    function showMethods() { hideAll(); document.getElementById('methodPage').style.display = 'block'; }
+    function closeNotice() { document.getElementById('noticeModal').style.display = 'none'; }
+    function showMsg(text, icon = 'success') { Swal.fire({ text: text, icon: icon, confirmButtonColor: '#0093E9', confirmButtonText: 'ঠিক আছে' }); }
+
+    async function handleLogin() {
+        const id = document.getElementById('userId').value;
+        const pin = document.getElementById('userPin').value;
+        if(!id || !pin) return showMsg("আইডি এবং পিন দিন!", "warning");
+        
+        document.getElementById('loginBtn').innerText = "ভেরিফাই হচ্ছে...";
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=login&userId=${id}&pin=${pin}`);
+            const result = await response.json();
+            if(result.status === "success") {
+                currentUserId = id;
+                gameBalance = parseFloat(result.balance);
+                showDash();
+                document.getElementById('noticeModal').style.display = 'flex';
+                fetchSettings();
+            } else { showMsg(result.message, "error"); }
+        } catch (error) { showMsg("সার্ভার ত্রুটি!", "error"); }
+        finally { document.getElementById('loginBtn').innerText = "প্রবেশ করুন"; }
+    }
+
+    async function fetchSettings() {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getNumbers`);
+            adminNumbersStore = await res.json();
+        } catch (e) { console.log("ডাটা লোড ব্যর্থ"); }
+    }
+
+    function checkInputs() {
+        const uNum = document.getElementById('userNum').value.trim();
+        const uAmt = document.getElementById('userAmt').value.trim();
+        const trx = document.getElementById('trxId').value.trim();
+        const btn = document.getElementById('submitBtn');
+        const isTransfer = currentAction === "Transfer Money";
+
+        const adminNum = document.getElementById('adminNumDisplay').innerText;
+        const isAdminNumValid = !isTransfer ? (adminNum !== "লোড হচ্ছে..." && adminNum !== "বর্তমানে এই মেথডটি বন্ধ আছে") : true;
+
+        let isValid = uNum.length >= 11 && parseFloat(uAmt) >= 50 && isAdminNumValid;
+        if(!isTransfer && trx.length < 5) isValid = false;
+
+        btn.disabled = !isValid;
+    }
+
+    document.getElementById('userNum').addEventListener('input', checkInputs);
+    document.getElementById('userAmt').addEventListener('input', checkInputs);
+    document.getElementById('trxId').addEventListener('input', checkInputs);
+
+    function openMethods(act) { 
+        currentAction = act; 
+        showMethods(); 
+        document.getElementById('pageActionTitle').innerText = (act === 'Add Money' ? "অ্যাড মানি" : "ট্রান্সফার") + " মেথড"; 
+    }
+
+    function openForm(met) {
+        currentMethod = met; hideAll(); document.getElementById('formPage').style.display = 'block';
+        document.getElementById('formTitle').innerText = met + " " + (currentAction === 'Add Money' ? "ডিপোজিট" : "উইথড্র");
+        
+        const isTransfer = currentAction === "Transfer Money";
+        document.getElementById('accType').style.display = isTransfer ? "none" : "block";
+        document.getElementById('trxId').style.display = isTransfer ? "none" : "block";
+        document.getElementById('adminNumBox').style.display = isTransfer ? "none" : "block";
+        
+        document.getElementById('userNum').value = "";
+        document.getElementById('userAmt').value = "";
+        document.getElementById('trxId').value = "";
+        
+        if(!isTransfer) updateAdminNum();
+        checkInputs();
+    }
+
+    function updateAdminNum() {
+        const type = document.getElementById('accType').value;
+        let mKey = currentMethod.toLowerCase() === "bkash" ? "bikash" : currentMethod.toLowerCase();
+        const key = mKey + (type === "Personal" ? "_p" : "_a");
+        const num = adminNumbersStore[key];
+        
+        const display = document.getElementById('adminNumDisplay');
+        document.getElementById('adminLabel').innerText = type + " নম্বরটি কপি করুন";
+        
+        if (num && num !== "নম্বর নাই" && num !== "") {
+            display.innerText = num;
+            display.style.color = "#0093E9";
+        } else {
+            display.innerText = "বর্তমানে এই মেথডটি বন্ধ আছে";
+            display.style.color = "red";
+        }
+        checkInputs();
+    }
+
+    async function submitForm() {
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "অপেক্ষা করুন...";
+        btn.disabled = true;
+
+        const params = new URLSearchParams({
+            action: (currentAction === 'Add Money') ? "submitDeposit" : "submitWithdraw",
+            userId: currentUserId,
+            amount: document.getElementById('userAmt').value,
+            trxId: document.getElementById('trxId').value.trim(),
+            userPhone: document.getElementById('userNum').value,
+            adminNum: document.getElementById('adminNumDisplay').innerText,
+            currentBal: gameBalance,
+            method: currentMethod,
+            accType: document.getElementById('accType').value
+        });
+
+        try {
+            const response = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+            const res = await response.json();
+            if(res.status === "success") {
+                if(res.newBalance !== undefined) gameBalance = parseFloat(res.newBalance);
+                showMsg("আবেদনটি সফল হয়েছে! দ্রুত সম্পন্ন হবে।");
+                showDash();
+                document.getElementById('dashBalDisplay').innerText = "ব্যালেন্স দেখুন";
+            } else { showMsg(res.message, "error"); }
+        } catch (e) { showMsg("সার্ভার ত্রুটি!", "error"); }
+        finally { btn.innerText = "সাবমিট করুন"; checkInputs(); }
+    }
+
+    function toggleMainBalance() {
+        const el = document.getElementById('dashBalDisplay');
+        if (el.innerText === "ব্যালেন্স দেখুন") {
+            el.innerText = "৳ " + gameBalance;
+            setTimeout(() => { el.innerText = "ব্যালেন্স দেখুন"; }, 3000);
+        }
+    }
+</script>
+</body>
+</html>
