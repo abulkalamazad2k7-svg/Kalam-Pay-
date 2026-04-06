@@ -6,7 +6,6 @@
     <title>কালাম পে - ড্যাশবোর্ড</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         :root {
@@ -26,7 +25,7 @@
         /* Header Section */
         .header {
             background: linear-gradient(135deg, #0093E9, #80D0C7);
-            padding: 50px 20px;
+            padding: 60px 20px;
             border-radius: 0 0 35px 35px;
             text-align: center;
             color: white;
@@ -39,21 +38,21 @@
         /* Dashboard Container */
         .container {
             max-width: 500px;
-            margin: 30px auto;
-            padding: 0 15px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        /* Grid Layout */
+        /* Grid Layout for 3 Buttons */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 15px;
         }
 
         .menu-item {
             background: white;
-            border-radius: 18px;
-            padding: 20px 5px;
+            border-radius: 20px;
+            padding: 25px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -62,7 +61,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
 
         .menu-item:active {
@@ -71,29 +70,24 @@
         }
 
         .menu-item i {
-            font-size: 26px;
-            margin-bottom: 12px;
+            font-size: 28px;
+            margin-bottom: 15px;
             background: linear-gradient(135deg, #0093E9, #80D0C7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .menu-item span {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             color: #4a5568;
         }
 
-        /* Special Spin Icon Color */
+        /* Special Color for Kalam Spin */
         .spin-icon i {
             background: linear-gradient(135deg, #FF512F, #DD2476);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        /* Spacing for bottom */
-        .footer-spacer {
-            height: 40px;
         }
 
     </style>
@@ -124,67 +118,9 @@
                 <span>কালাম স্পিন</span>
             </div>
 
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-user-circle"></i>
-                <span>প্রোফাইল</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-mobile-alt"></i>
-                <span>রিচার্জ</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>বিল পে</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-headset"></i>
-                <span>সাপোর্ট</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-bell"></i>
-                <span>নোটিশ</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-cog"></i>
-                <span>সেটিংস</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-gift"></i>
-                <span>অফার</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-users"></i>
-                <span>রেফার</span>
-            </div>
-
-            <div class="menu-item" onclick="showProgress()">
-                <i class="fas fa-shield-alt"></i>
-                <span>নিরাপত্তা</span>
-            </div>
-
         </div>
 
-        <div class="footer-spacer"></div>
     </div>
-
-    <script>
-        function showProgress() {
-            Swal.fire({
-                title: 'কাজ চলমান!',
-                text: 'এই অপশনটির আপডেট কাজ এখনো চলছে। খুব শীঘ্রই এটি চালু হবে।',
-                icon: 'info',
-                confirmButtonColor: '#0093E9',
-                confirmButtonText: 'ঠিক আছে'
-            });
-        }
-    </script>
 
 </body>
 </html>
