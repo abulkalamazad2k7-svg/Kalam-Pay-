@@ -2,73 +2,219 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create ID Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Kalam Pay - Secure Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f2f2f2; }
-        .form-card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #218838; }
-        button:disabled { background-color: #aaa; }
-        p { font-weight: bold; margin-top: 15px; }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap');
+
+        :root {
+            --primary: #0093E9;
+            --secondary: #80D0C7;
+            --danger: #ff4d4f;
+            --success: #27ae60;
+            --bg: #f4f7f6;
+        }
+
+        body {
+            margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif;
+            background: var(--bg); min-height: 100vh; display: flex; justify-content: center; align-items: center;
+        }
+
+        .reg-card {
+            background: #fff; width: 100%; max-width: 360px; padding: 40px 25px;
+            border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin: 15px; 
+            box-sizing: border-box; border-top: 6px solid var(--primary);
+        }
+
+        .brand-header { text-align: center; margin-bottom: 25px; }
+        .brand-header i { font-size: 45px; color: var(--primary); }
+        .brand-header h2 { margin: 10px 0 5px; color: #2c3e50; font-size: 24px; }
+        .brand-header p { margin: 0; color: #7f8c8d; font-size: 13px; }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #34495e; margin-bottom: 8px; font-weight: 600; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 14px; }
+        input { 
+            width: 100%; padding: 12px 12px 12px 40px; border: 1.5px solid #ebebeb; 
+            border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; transition: 0.3s; background: #fafafa;
+        }
+        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 10px rgba(0,147,233,0.1); }
+
+        .btn-reg { 
+            width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; border: none; padding: 15px; border-radius: 12px; 
+            font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s;
+        }
+        .btn-reg:active { transform: scale(0.97); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center;
+            align-items: center; z-index: 10000; padding: 20px;
+        }
+        .modal-box {
+            background: white; width: 100%; max-width: 320px; padding: 0;
+            border-radius: 20px; text-align: center; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3); overflow: hidden;
+        }
+        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-header { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .modal-body { padding: 20px; }
+        
+        .kalam-ticket {
+            background: #fff; border: 1px dashed #bbb; padding: 12px;
+            border-radius: 10px; text-align: left; margin-top: 10px;
+        }
+        .ticket-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .ticket-row b { color: var(--primary); font-family: 'monospace'; }
+
+        .warning-footer {
+            background: #fff5f5; color: #c0392b; font-size: 11px;
+            padding: 10px; margin-top: 12px; border-radius: 8px; text-align: left;
+        }
+
+        .modal-btn { 
+            background: var(--primary); color: white; border: none; padding: 12px; 
+            cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; 
+        }
     </style>
 </head>
 <body>
 
-<div class="form-card">
-    <h2>Create ID</h2>
-    <input type="text" id="userNumber" placeholder="User Number লিখুন">
-    <input type="number" id="pin" placeholder="4-digit PIN লিখুন">
-    <button id="submitBtn" onclick="sendToSheet()">Create ID</button>
-    <p id="msg"></p>
+<div class="reg-card">
+    <div class="brand-header">
+        <i class="fas fa-paper-plane"></i>
+        <h2>কালাম পে</h2>
+        <p>সহজ ও নিরাপদ ডিজিটাল পেমেন্ট</p>
+    </div>
+
+    <div class="input-group">
+        <label>মোবাইল নম্বর</label>
+        <div class="input-wrapper">
+            <i class="fas fa-phone-alt"></i>
+            <input type="tel" id="userNumber" placeholder="মোবাইল নম্বর লিখুন" maxlength="11">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>গোপন পিন</label>
+        <div class="input-wrapper">
+            <i class="fas fa-key"></i>
+            <input type="password" id="password" placeholder="নতুন পিন লিখুন">
+        </div>
+    </div>
+
+    <button id="regBtn" class="btn-reg" onclick="processRegistration()">অ্যাকাউন্ট তৈরি করুন</button>
+</div>
+
+<div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <i id="modalIcon" style="font-size: 35px;"></i>
+            <h3 id="modalTitle" style="margin: 8px 0 0; font-size: 17px;">সফল!</h3>
+        </div>
+        
+        <div class="modal-body">
+            <p id="modalMsg" style="margin-bottom: 10px; color: #555; font-size: 14px;"></p>
+            
+            <div id="infoSection" style="display: none;">
+                <div class="kalam-ticket">
+                    <div class="ticket-row"><span>আইডি:</span> <b id="outID"></b></div>
+                    <div class="ticket-row"><span>পিন:</span> <b id="outPass"></b></div>
+                </div>
+                <div class="warning-footer">
+                    <i class="fas fa-info-circle"></i> এটি <b>স্ক্রিনশট</b> নিন। পিন ভুলে গেলে লগইন করা সম্ভব হবে না।
+                </div>
+            </div>
+        </div>
+        <button class="modal-btn" id="modalBtn" onclick="closeModal()">ঠিক আছে</button>
+    </div>
 </div>
 
 <script>
-function sendToSheet() {
-    const userNumber = document.getElementById('userNumber').value.trim();
-    const pin = document.getElementById('pin').value.trim();
-    const btn = document.getElementById('submitBtn');
-    const msg = document.getElementById('msg');
+const modal = document.getElementById('customModal');
+let autoCloseTimer;
 
-    // আপনার দেওয়া সর্বশেষ সচল লিঙ্কটি এখানে বসিয়ে দেওয়া হয়েছে
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx-yk9RaSl_rzt-C9_o0MSV5mm4pe-2uzwePRbeVvPGOcBu4lkVzOxj7ZziQy_q9Qz9Bw/exec';
+function showKalamModal(title, msg, type, showInfo = false, id = "", pass = "") {
+    clearTimeout(autoCloseTimer);
 
-    if (!userNumber || !pin) {
-        alert("দয়া করে সব ঘর পূরণ করুন!");
-        return;
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalMsg').innerHTML = msg;
+    const infoSection = document.getElementById('infoSection');
+    const mIcon = document.getElementById('modalIcon');
+    
+    infoSection.style.display = showInfo ? 'block' : 'none';
+    
+    if(showInfo) {
+        document.getElementById('outID').innerText = id;
+        document.getElementById('outPass').innerText = pass;
     }
 
-    if (!/^\d{4}$/.test(pin)) {
-        alert("PIN অবশ্যই 4 ডিজিট হতে হবে!");
-        return;
+    if(type === 'error') {
+        mIcon.className = "fas fa-times-circle";
+        mIcon.style.color = "var(--danger)";
+    } else if(type === 'success') {
+        mIcon.className = "fas fa-check-circle";
+        mIcon.style.color = "var(--success)";
+    } else {
+        mIcon.className = "fas fa-circle-notch fa-spin";
+        mIcon.style.color = "var(--primary)";
+    }
+    
+    modal.style.display = 'flex';
+
+    if (!showInfo) {
+        autoCloseTimer = setTimeout(() => {
+            closeModal();
+        }, 1500);
+    }
+}
+
+function closeModal() {
+    modal.style.display = 'none';
+}
+
+function processRegistration() {
+    const userNumber = document.getElementById('userNumber').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    const btn = document.getElementById('regBtn');
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxVUagHfJ8Q-zIeXoev4smkvkZrk3KYs2xvdrHeU299ZAosK8VtqsuAhfR43K5vdAuvug/exec';
+
+    if (!/^(013|014|015|016|017|018|019)\d{8}$/.test(userNumber)) { 
+        showKalamModal("ভুল নম্বর", "সঠিক মোবাইল নম্বর প্রদান করুন", "error");
+        return; 
+    }
+
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?&]).{6,}$/.test(pass)) { 
+        showKalamModal("পিন ত্রুটি", "পিনটি শর্ত অনুযায়ী সঠিকভাবে দিন", "error");
+        return; 
     }
 
     btn.disabled = true;
-    btn.innerText = "Saving...";
-    msg.innerText = "আইডি তৈরি করা হচ্ছে...";
-    msg.style.color = "blue";
+    showKalamModal("প্রসেসিং", "অপেক্ষা করুন...", "info");
 
-    // আপনার অ্যাপস স্ক্রিপ্ট কোডের ভেরিয়েবলের সাথে মিল রেখে ডেটা পাঠানো হচ্ছে
     fetch(scriptURL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "userId": userNumber, "pin": pin }) 
+        body: JSON.stringify({ "userId": userNumber, "pin": pass }) 
     })
     .then(() => {
-        msg.innerText = "সফলভাবে সেভ হয়েছে!";
-        msg.style.color = "green";
-        document.getElementById('userNumber').value = "";
-        document.getElementById('pin').value = "";
-        btn.disabled = false;
-        btn.innerText = "Create ID";
+        closeModal();
+        setTimeout(() => {
+            showKalamModal("সফল হয়েছে!", "আপনার আইডি তৈরি সম্পন্ন। তথ্যগুলো সংরক্ষণ করুন।", "success", true, userNumber, pass);
+            document.getElementById('userNumber').value = "";
+            document.getElementById('password').value = "";
+            btn.disabled = false;
+        }, 200);
     })
-    .catch(error => {
-        msg.innerText = "ভুল হয়েছে: " + error.message;
-        msg.style.color = "red";
+    .catch(() => {
+        showKalamModal("ত্রুটি", "সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন", "error");
         btn.disabled = false;
-        btn.innerText = "Create ID";
     });
 }
 </script>
