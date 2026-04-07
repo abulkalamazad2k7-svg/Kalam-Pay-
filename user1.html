@@ -100,10 +100,10 @@
     </div>
 
     <div class="input-group">
-        <label>গোপন পিন</label>
+        <label>গোপন পিন (৬ ডিজিট)</label>
         <div class="input-wrapper">
             <i class="fas fa-key"></i>
-            <input type="password" id="password" placeholder="নতুন পিন লিখুন">
+            <input type="password" id="password" placeholder="৬ ডিজিটের পিন দিন" maxlength="6" inputmode="numeric">
         </div>
     </div>
 
@@ -184,13 +184,15 @@ function processRegistration() {
 
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxVUagHfJ8Q-zIeXoev4smkvkZrk3KYs2xvdrHeU299ZAosK8VtqsuAhfR43K5vdAuvug/exec';
 
+    // মোবাইল নম্বর যাচাই
     if (!/^(013|014|015|016|017|018|019)\d{8}$/.test(userNumber)) { 
         showKalamModal("ভুল নম্বর", "সঠিক মোবাইল নম্বর প্রদান করুন", "error");
         return; 
     }
 
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?&]).{6,}$/.test(pass)) { 
-        showKalamModal("পিন ত্রুটি", "পিনটি শর্ত অনুযায়ী সঠিকভাবে দিন", "error");
+    // পিন যাচাই: শুধুমাত্র ৬টি সংখ্যা হতে হবে
+    if (!/^\d{6}$/.test(pass)) { 
+        showKalamModal("পিন ত্রুটি", "পিনটি অবশ্যই ৬ ডিজিটের সংখ্যা হতে হবে", "error");
         return; 
     }
 
