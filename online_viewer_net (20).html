@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalam Wheel Spin 2026 - Live Sync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #0f0c29; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; overflow: hidden; }
+        .game-container { width: 95%; max-width: 400px; background: linear-gradient(135deg, #241468 0%, #0f0c29 100%); border-radius: 30px; padding: 25px; border: 3px solid #ffd700; text-align: center; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); position: relative; }
+        
+        #loginSection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 1000; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid #ffd700; background: #0f0c29; color: white; text-align: center; font-size: 16px; }
+        .login-btn { background: #ffd700; color: #000; padding: 15px 40px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; width: 80%; margin-top: 15px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); }
+        
+        .game-header { color: #ffd700; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 14px; align-items: center; }
+        #realTimeClock { background: rgba(255, 255, 255, 0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.3); }
+
+        .wheel-box { position: relative; width: 250px; height: 250px; margin: 20px auto; border-radius: 50%; }
+        .wheel-img { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #ffd700; background: conic-gradient(#ff4757 0deg 120deg, #2f3542 120deg 240deg, #2ed573 240deg 360deg); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ffd700; z-index: 10; }
+
+        #resultDisplay { font-size: 22px; font-weight: 900; color: #ffd700; margin: 15px 0; height: 30px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        
+        .bet-buttons { display: flex; justify-content: space-between; gap: 8px; margin: 20px 0; }
+        .bet-btn { flex: 1; padding: 12px 5px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .bet-btn:active { transform: scale(0.95); }
+
+        .footer-info { background: rgba(0,0,0,0.4); border-radius: 20px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,215,0,0.2); }
+        #gameBal { color: #2ed573; font-weight: bold; font-size: 18px; }
+        
+        .hidden { display: none !important; }
+        .chip-menu { position: absolute; bottom: 85px; right: 20px; background: #fff; border-radius: 15px; display: none; flex-direction: column; padding: 8px; gap: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 100; }
+        .chip { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; border: 2px solid #241468; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div id="loginSection">
+        <h2 style="color: #ffd700;">KALAM SPIN 2026</h2>
+        <input type="text" id="userId" class="login-input" placeholder="User ID">
+        <input type="password" id="userPin" class="login-input" placeholder="PIN Code">
+        <button class="login-btn" onclick="processLogin()">LOGIN</button>
+        <p id="msg" style="color: #ff4757; font-size: 12px; margin-top: 10px;"></p>
+    </div>
+
+    <div class="game-header">
+        <span id="gameStatus">WAITING...</span>
+        <div id="realTimeClock"><span id="clockText">00:00:00</span></div>
+        <span>ROUND: <span id="timer">--</span>s</span>
+    </div>
+
+    <div class="wheel-box">
+        <div class="wheel-pointer"></div>
+        <div id="mainWheel" class="wheel-img"></div>
+    </div>
+
+    <div id="resultDisplay"></div>
+
+    <div id="betArea" class="bet-buttons">
+        <button id="btn1" class="bet-btn" style="background:#ff4757" onclick="placeBet(1, 'RED')">RED<br><small id="rT">৳0</small></button>
+        <button id="btn2" class="bet-btn" style="background:#2f3542" onclick="placeBet(2, 'BLACK')">BLACK<br><small id="bT">৳0</small></button>
+        <button id="btn3" class="bet-btn" style="background:#2ed573" onclick="placeBet(3, 'GREEN')">GREEN<br><small id="gT">৳0</small></button>
+    </div>
+
+    <div class="footer-info">
+        <div style="text-align:left">
+            <small style="color:#aaa;">BALANCE</small><br>
+            ৳<span id="gameBal">0</span>
+        </div>
+        <div id="selectedChipBtn" onclick="toggleChips()" style="background:#ffd700; color:#000; padding:8px 15px; border-radius:50px; font-weight:bold; cursor:pointer;">৳10</div>
+    </div>
+
+    <div id="chipMenu" class="chip-menu">
+        <div class="chip" style="background:#f1c40f" onclick="setChip(10000)">10K</div>
+        <div class="chip" style="background:#e67e22" onclick="setChip(500)">500</div>
+        <div class="chip" style="background:#3498db" onclick="setChip(100)">100</div>
+        <div class="chip" style="background:#95a5a6" onclick="setChip(50)">50</div>
+        <div class="chip" style="background:#ecf0f1" onclick="setChip(10)">10</div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVTmSLGfrkG956AD2NGtl88W6EHB29zZTnw-_d_ojwenxjTm2ObBbPnZfn1WkMrSCP/exec";
+    
+    let activeUser = "";
+    let activeBalance = 0;
+    let selectedChip = 10;
+    let isSpinning = false;
+    let currentRotation = 0;
+    let myBets = { 1: 0, 2: 0, 3: 0 }; // 1=Red, 2=Black, 3=Green
+    let betCodes = ""; // 123 format
+
+    async function processLogin() {
+        const id = document.getElementById('userId').value;
+        const pin = document.getElementById('userPin').value;
+        if(!id || !pin) return;
+        
+        document.getElementById('msg').innerText = "Verifying...";
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "login", username: id, password: pin })
+            });
+            const data = await response.json();
+            if(data.status === "success") {
+                activeUser = id;
+                activeBalance = data.balance;
+                document.getElementById('gameBal').innerText = activeBalance;
+                document.getElementById('loginSection').classList.add('hidden');
+                initGameEngine();
+            } else {
+                document.getElementById('msg').innerText = "Invalid ID or PIN!";
+            }
+        } catch(e) { document.getElementById('msg').innerText = "Connection Error!"; }
+    }
+
+    function initGameEngine() {
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clockText').innerText = now.toLocaleTimeString();
+            let seconds = now.getSeconds() % 30;
+
+            if (seconds < 20) {
+                if(isSpinning) resetRound();
+                document.getElementById('timer').innerText = 20 - seconds;
+                document.getElementById('gameStatus').innerText = "PLACE YOUR BETS";
+            } else if (seconds === 20 && !isSpinning) {
+                runSpinSequence();
+            }
+        }, 1000);
+    }
+
+    async function runSpinSequence() {
+        isSpinning = true;
+        document.getElementById('gameStatus').innerText = "WHEEL SPINNING...";
+        
+        // ১. সার্ভার থেকে উইনার এবং আপডেট ডেটা নিয়ে আসা
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: "processRound", 
+                    username: activeUser, 
+                    amount: Object.values(myBets).reduce((a, b) => a + b, 0),
+                    colorCode: betCodes 
+                })
+            });
+            const data = await response.json();
+            const winner = data.winner; // RED, BLACK, or GREEN
+
+            // ২. হুইল ঘোরানো লজিক
+            let targetDeg = (winner === "RED") ? 60 : (winner === "BLACK") ? 180 : 300;
+            currentRotation = currentRotation + (360 * 5) + (360 - (currentRotation % 360)) - targetDeg;
+            document.getElementById('mainWheel').style.transform = `rotate(${currentRotation}deg)`;
+
+            // ৩. ফলাফল দেখানো এবং ব্যালেন্স আপডেট
+            setTimeout(() => {
+                document.getElementById('resultDisplay').innerText = "WINNER: " + winner;
+                activeBalance = data.newBalance || activeBalance; // সার্ভার থেকে আসা নতুন ব্যালেন্স
+                document.getElementById('gameBal').innerText = activeBalance;
+            }, 5500);
+
+        } catch (err) {
+            console.error("Round Failed", err);
+            isSpinning = false;
+        }
+    }
+
+    function placeBet(code, name) {
+        if(isSpinning || activeBalance < selectedChip) return;
+        
+        activeBalance -= selectedChip;
+        myBets[code] += selectedChip;
+        
+        // betCodes স্ট্রিং তৈরি (উদা: 1, 12, 123)
+        if(!betCodes.includes(code.toString())) {
+            betCodes = (betCodes + code).split('').sort().join('');
+        }
+        
+        document.getElementById('gameBal').innerText = activeBalance;
+        let targetId = (code === 1) ? 'rT' : (code === 2) ? 'bT' : 'gT';
+        document.getElementById(targetId).innerText = "৳" + myBets[code];
+    }
+
+    function resetRound() {
+        isSpinning = false;
+        myBets = { 1: 0, 2: 0, 3: 0 };
+        betCodes = "";
+        document.getElementById('rT').innerText = "৳0";
+        document.getElementById('bT').innerText = "৳0";
+        document.getElementById('gT').innerText = "৳0";
+        document.getElementById('resultDisplay').innerText = "";
+    }
+
+    function toggleChips() {
+        const m = document.getElementById('chipMenu');
+        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function setChip(v) {
+        selectedChip = v;
+        document.getElementById('selectedChipBtn').innerText = "৳" + v;
+        toggleChips();
+    }
+</script>
+</body>
+</html>
