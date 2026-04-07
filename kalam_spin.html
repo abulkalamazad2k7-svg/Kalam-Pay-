@@ -53,16 +53,6 @@
         }
         /* ---------------------------------- */
 
-        /* Win Popup Layer */
-        #winPopup {
-            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            background: rgba(46, 213, 115, 0.95); color: #fff; padding: 25px 50px;
-            border-radius: 50px; font-size: 28px; font-weight: 800; z-index: 5000;
-            box-shadow: 0 0 50px #2ed573; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            pointer-events: none; border: 4px solid #fff; white-space: nowrap;
-        }
-        #winPopup.show { transform: translate(-50%, -50%) scale(1); }
-
         #offSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background:#1a1a2e; z-index:10000; 
@@ -130,7 +120,6 @@
 <body>
 
 <div class="game-container">
-    <div id="winPopup">YOU WIN ৳<span id="winAmount">0</span></div>
 
     <div id="offSection" class="hidden">
         <h2 id="offNotice" style="color:#ffd700; padding:20px; text-align:center;"></h2>
@@ -234,8 +223,18 @@
         startEngine();
     }
 
-    function toggleChipMenu() { if(!isSpinning) { const m = document.getElementById('chipArea'); m.style.display = (m.style.display==='flex')?'none':'flex'; } }
-    function setChip(v) { selectedChip = v; document.getElementById('selectedVal').innerText = "৳"+v; document.getElementById('chipArea').style.display='none'; }
+    function toggleChipMenu() { 
+        if(!isSpinning) { 
+            const m = document.getElementById('chipArea'); 
+            m.style.display = (m.style.display==='flex')?'none':'flex'; 
+        } 
+    }
+
+    function setChip(v) { 
+        selectedChip = v; 
+        document.getElementById('selectedVal').innerText = "৳"+v; 
+        document.getElementById('chipArea').style.display='none'; 
+    }
 
     function startEngine() {
         setInterval(async () => {
@@ -268,28 +267,27 @@
         document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
 
         setTimeout(() => {
-            let winAmt = 0;
-            if(data.winner === "RED" && bets.RED > 0) winAmt = bets.RED * 2;
-            if(data.winner === "BLACK" && bets.BLACK > 0) winAmt = bets.BLACK * 2;
-            if(data.winner === "GREEN" && bets.GREEN > 0) winAmt = bets.GREEN * 14;
-
-            if(winAmt > 0) {
-                const pop = document.getElementById('winPopup');
-                document.getElementById('winAmount').innerText = winAmt;
-                pop.classList.add('show');
-                setTimeout(() => pop.classList.remove('show'), 2000);
-            }
-
             activeBal = data.newBalance;
             document.getElementById('bal').innerText = activeBal;
             document.getElementById('status').innerHTML = `<i class="fas fa-flag-checkered"></i> FINISHED`;
-        }, 7000);
+        }, cfg.spinTime * 1000);
     }
 
-    function placeBet(col) {
+    async function placeBet(col) {
         if(isSpinning || activeBal < selectedChip) return;
+
         const code = (col === 'RED') ? '1' : (col === 'BLACK') ? '2' : '3';
-        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "placeBet", username: activeUser, amount: selectedChip, colorCode: code }) });
+
+        await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                action: "placeBet", 
+                username: activeUser, 
+                amount: selectedChip, 
+                colorCode: code 
+            }) 
+        });
+
         activeBal -= selectedChip;
         bets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
@@ -297,9 +295,11 @@
     }
 
     function resetUI() { 
-        isSpinning = false; bets = { RED: 0, BLACK: 0, GREEN: 0 }; 
-        document.getElementById('rT').innerText = "৳0"; document.getElementById('bT').innerText = "৳0"; document.getElementById('gT').innerText = "৳0"; 
-        document.getElementById('winPopup').classList.remove('show');
+        isSpinning = false; 
+        bets = { RED: 0, BLACK: 0, GREEN: 0 }; 
+        document.getElementById('rT').innerText = "৳0"; 
+        document.getElementById('bT').innerText = "৳0"; 
+        document.getElementById('gT').innerText = "৳0"; 
     }
 </script>
 </body>
