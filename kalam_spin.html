@@ -28,7 +28,7 @@
             padding: 20px; border: none;
         }
 
-        /* --- NEW KALAM PAY LOGIN STYLE --- */
+        /* --- LOGIN STYLE --- */
         #loginSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
@@ -51,7 +51,6 @@
             padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; 
             font-size: 16px; box-shadow: 0 4px 15px rgba(0,147,233,0.3); transition: 0.3s;
         }
-        /* ---------------------------------- */
 
         #offSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
@@ -187,6 +186,9 @@
     let bets = { RED: 0, BLACK: 0, GREEN: 0 };
     let cfg = { betTime: 20, spinTime: 7 };
 
+    const MIN_BET = 10;
+    const MAX_BET = 1000000;
+
     async function processLogin() {
         const u = document.getElementById('uid').value, p = document.getElementById('pin').value;
         if(!u || !p) return;
@@ -219,7 +221,9 @@
             return;
         }
         cfg = data;
-        document.getElementById('chipArea').innerHTML = data.chips.map(v => `<div class="chip" onclick="setChip(${v})">${v}</div>`).join('');
+        document.getElementById('chipArea').innerHTML = data.chips
+        .filter(v => v >= MIN_BET && v <= MAX_BET)
+        .map(v => `<div class="chip" onclick="setChip(${v})">${v}</div>`).join('');
         startEngine();
     }
 
@@ -231,6 +235,9 @@
     }
 
     function setChip(v) { 
+        if(v < MIN_BET) v = MIN_BET;
+        if(v > MAX_BET) v = MAX_BET;
+
         selectedChip = v; 
         document.getElementById('selectedVal').innerText = "৳"+v; 
         document.getElementById('chipArea').style.display='none'; 
@@ -274,7 +281,15 @@
     }
 
     async function placeBet(col) {
-        if(isSpinning || activeBal < selectedChip) return;
+        if(isSpinning) return;
+
+        if(selectedChip < MIN_BET || selectedChip > MAX_BET) {
+            document.getElementById('chipArea').style.display='none';
+            alert("বেট লিমিট: সর্বনিম্ন ৳10 এবং সর্বোচ্চ ৳10,00,000");
+            return;
+        }
+
+        if(activeBal < selectedChip) return;
 
         const code = (col === 'RED') ? '1' : (col === 'BLACK') ? '2' : '3';
 
