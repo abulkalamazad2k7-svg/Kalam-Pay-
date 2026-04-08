@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kalam Spin 2026 - Pro Update</title>
+    <title>Kalam Spin 2026 - Final Stable</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
         :root {
             --primary: #0093E9;
             --secondary: #80D0C7;
-            --white: #ffffff;
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --gold: #ffd700;
         }
 
         body { 
@@ -23,87 +22,73 @@
         .game-container { 
             width: 100%; max-width: 500px; height: 100vh; 
             background: linear-gradient(180deg, #241468 0%, #1a1a2e 100%);
-            display: flex; flex-direction: column; position: relative; 
-            padding: 20px; border: none;
+            display: flex; flex-direction: column; position: relative; padding: 20px;
         }
 
-        /* লগইন সেকশন আপডেট */
+        /* লগইন সেকশন */
         #loginSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             z-index:10000; display:flex; flex-direction:column; align-items:center;
         }
-        .login-header-area { text-align:center; color:white; padding: 70px 0 30px; }
-        .login-card { 
-            background: white; border-radius: 20px; padding: 25px; 
-            box-shadow: var(--shadow); width: 85%; color: #333;
-        }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #777; margin-bottom: 5px; font-weight: bold; }
-        .input-group input { 
-            width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; 
-            font-size: 16px; outline: none; background: #fafafa; 
-        }
-        .btn-main { 
-            width: 100%; background: var(--primary); color: white; border: none; 
-            padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; 
-            font-size: 16px; transition: 0.3s;
+        .login-header-area { text-align:center; padding: 70px 0 30px; }
+        
+        @keyframes slowSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .login-header-area i { 
+            font-size: 60px; color: var(--gold); display: inline-block;
+            animation: slowSpin 5s linear infinite; text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
 
-        .game-header { display: flex; justify-content: space-between; align-items: center; color: #ffd700; font-weight: bold; padding: 10px 5px; }
+        .login-card { background: white; border-radius: 20px; padding: 25px; width: 85%; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .input-group { margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; font-size: 16px; outline: none; }
+        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+
+        .game-header { display: flex; justify-content: space-between; align-items: center; color: var(--gold); font-weight: bold; padding: 10px 5px; }
         .wheel-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         
-        .wheel-box { 
-            position: relative; width: 280px; height: 280px; 
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .wheel-small { transform: scale(0.7); }
+        .wheel-box { position: relative; width: 280px; height: 280px; transition: transform 0.8s ease; }
+        .wheel-small { transform: scale(0.75); }
 
         .wheel-img { 
-            width: 100%; height: 100%; border-radius: 50%; border: 10px solid #ffd700; 
+            width: 100%; height: 100%; border-radius: 50%; border: 10px solid var(--gold); 
             background: conic-gradient(#ff4757 0deg 120deg, #2f3542 120deg 240deg, #2ed573 240deg 360deg); 
             transition: transform 20s cubic-bezier(0.15, 0, 0.15, 1); 
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
         }
         
-        .wheel-pointer { 
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%); 
-            width: 0; height: 0; border-left: 20px solid transparent; 
-            border-right: 20px solid transparent; border-top: 35px solid #ffd700; z-index: 10; 
-        }
+        .wheel-pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--gold); z-index: 10; }
 
-        @keyframes pulseBet {
-            0% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
-            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
+        /* বেটিং বাটন অ্যানিমেশন */
+        @keyframes betGlow {
+            0% { box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
+            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+            100% { box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
         }
 
         .bet-buttons { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px; }
         .bet-btn { 
-            flex: 1; padding: 20px 5px; border-radius: 20px; color: white; 
-            font-weight: bold; border: 3px solid rgba(255,255,255,0.3); cursor: pointer;
-            font-size: 14px; text-align: center; transition: all 0.4s ease;
+            flex: 1; padding: 20px 5px; border-radius: 15px; color: white; font-weight: bold; 
+            border: 2px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; transition: 0.3s;
         }
 
+        /* যখন বাজি ধরা সচল */
         .bet-active { 
-            animation: pulseBet 1.5s infinite; 
-            border-color: #ffd700 !important;
-            opacity: 1 !important;
+            animation: betGlow 1.5s infinite; 
+            border-color: var(--gold) !important; 
+            opacity: 1 !important; 
             filter: grayscale(0) !important;
+            pointer-events: auto !important;
         }
 
-        .footer-info { 
-            background: rgba(0,0,0,0.6); padding: 20px; border-radius: 25px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;
-        }
-        .chip-selector { background: #fff; color: #241468; padding: 12px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; border: 2px solid #ffd700; display: flex; align-items: center; gap: 10px; }
+        /* যখন বন্ধ */
+        .disabled { opacity: 0.25; pointer-events: none !important; filter: grayscale(1); }
 
-        .chip-menu { position: absolute; bottom: 120px; right: 25px; display: none; flex-direction: column; gap: 10px; z-index: 100; }
-        .chip { width: 60px; height: 60px; border-radius: 50%; background: white; color: #241468; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 3px solid #ffd700; }
+        .footer-info { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .chip-selector { background: #fff; color: #241468; padding: 10px 18px; border-radius: 30px; font-weight: bold; cursor: pointer; border: 2px solid var(--gold); transition: 0.3s; }
+        .chip-menu { position: absolute; bottom: 100px; right: 25px; display: none; flex-direction: column; gap: 8px; z-index: 100; }
+        .chip { width: 55px; height: 55px; border-radius: 50%; background: white; color: #241468; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 3px solid var(--gold); }
 
         .hidden { display: none !important; }
-        .disabled { opacity: 0.4; pointer-events: none; filter: grayscale(0.8); }
     </style>
 </head>
 <body>
@@ -111,26 +96,24 @@
 <div class="game-container">
     <div id="loginSection">
         <div class="login-header-area">
-            <i class="fas fa-sync-alt" style="font-size: 50px;"></i>
-            <h1 style="font-size: 30px; margin:10px 0; letter-spacing: 1px;">কালাম স্পিন লগইন</h1>
+            <i class="fas fa-dharmachakra"></i>
+            <h1 style="color:white; font-size: 30px; margin-top: 10px;">কালাম স্পিন লগইন</h1>
         </div>
         <div class="login-card">
             <div class="input-group">
-                <label>মোবাইল নাম্বার / ইউজার আইডি</label>
-                <input type="text" id="uid" placeholder="01XXXXXXXXX">
+                <input type="text" id="uid" placeholder="ইউজার আইডি / মোবাইল">
             </div>
             <div class="input-group">
-                <label>পিন নাম্বার</label>
-                <input type="password" id="pin" placeholder="******">
+                <input type="password" id="pin" placeholder="সিক্রেট পিন">
             </div>
-            <button class="btn-main" onclick="processLogin()">লগইন করুন</button>
-            <p id="msg" style="text-align:center; font-size:13px; margin-top:10px; color:#ff4757;"></p>
+            <button class="btn-main" onclick="processLogin()">প্রবেশ করুন</button>
+            <p id="msg" style="text-align:center; font-size:12px; margin-top:10px; color:red;"></p>
         </div>
     </div>
 
     <div class="game-header">
-        <span id="status"><i class="fas fa-play"></i> WAITING...</span>
-        <span><i class="fas fa-stopwatch"></i> <span id="timer">--</span>s</span>
+        <span id="status">লোড হচ্ছে...</span>
+        <span><i class="fas fa-clock"></i> <span id="timer">00</span>s</span>
     </div>
 
     <div class="wheel-area">
@@ -141,26 +124,20 @@
     </div>
 
     <div id="betArea" class="bet-buttons disabled">
-        <button id="btnRED" class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">
-            RED <br> <small id="rT">৳0</small>
-        </button>
-        <button id="btnBLACK" class="bet-btn" style="background:#2f3542" onclick="placeBet('BLACK')">
-            BLACK <br> <small id="bT">৳0</small>
-        </button>
-        <button id="btnGREEN" class="bet-btn" style="background:#2ed573" onclick="placeBet('GREEN')">
-            GREEN <br> <small id="gT">৳0</small>
-        </button>
+        <button id="btnRED" class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">RED<br><small id="rT">৳0</small></button>
+        <button id="btnBLACK" class="bet-btn" style="background:#2f3542" onclick="placeBet('BLACK')">BLACK<br><small id="bT">৳0</small></button>
+        <button id="btnGREEN" class="bet-btn" style="background:#2ed573" onclick="placeBet('GREEN')">GREEN<br><small id="gT">৳0</small></button>
     </div>
 
     <div id="chipArea" class="chip-menu"></div>
 
     <div class="footer-info">
         <div>
-            <small style="color:#aaa;">MY BALANCE</small>
-            <div style="font-size:22px; font-weight:800; color:#ffd700;">৳<span id="bal">0</span></div>
+            <small style="color:#aaa;">ব্যালেন্স</small>
+            <div style="font-size:22px; font-weight:bold; color:var(--gold);">৳<span id="bal">0</span></div>
         </div>
-        <div id="chipTrigger" class="chip-selector" onclick="toggleChipMenu()">
-            <span id="selectedVal">৳10</span> <i class="fas fa-chevron-up"></i>
+        <div id="chipTrigger" class="chip-selector disabled" onclick="toggleChipMenu()">
+            <span id="selectedVal">৳10</span>
         </div>
     </div>
 </div>
@@ -174,8 +151,7 @@
     async function processLogin() {
         const u = document.getElementById('uid').value, p = document.getElementById('pin').value;
         if(!u || !p) return;
-        const msg = document.getElementById('msg');
-        msg.innerText = "যাচাই করা হচ্ছে...";
+        document.getElementById('msg').innerText = "যাচাই করা হচ্ছে...";
         try {
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${u}&password=${p}`);
             const data = await res.json();
@@ -184,8 +160,8 @@
                 document.getElementById('bal').innerText = activeBal;
                 document.getElementById('loginSection').classList.add('hidden');
                 initGame();
-            } else { msg.innerText = "ভুল আইডি বা পিন!"; }
-        } catch(e) { msg.innerText = "সার্ভার সংযোগ বিফল!"; }
+            } else { document.getElementById('msg').innerText = "ইউজার বা পিন ভুল!"; }
+        } catch(e) { document.getElementById('msg').innerText = "সার্ভার এরর!"; }
     }
 
     async function initGame() {
@@ -214,35 +190,46 @@
 
     function startCycle() {
         setInterval(() => {
-            const now = new Date();
-            const sec = now.getSeconds();
+            const sec = new Date().getSeconds();
             
+            // ১৫ সেকেন্ড সময় (০-১৫ এবং ৩০-৪৫)
             let isBetTime = (sec >= 0 && sec < 15) || (sec >= 30 && sec < 45);
-            let timeRemaining = isBetTime ? (sec < 15 ? 15 - sec : 45 - sec) : 0;
+            let timeRem = isBetTime ? (sec < 15 ? 15 - sec : 45 - sec) : 0;
 
             if (isBetTime) {
                 if(isSpinning === "done") resetUI(); 
-                document.getElementById('timer').innerText = timeRemaining;
-                document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> PLACE YOUR BET`;
+                document.getElementById('timer').innerText = timeRem;
+                document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> বাজি ধরুন`;
                 
-                const betArea = document.getElementById('betArea');
-                betArea.classList.remove('disabled');
-                document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.add('bet-active'));
-                
-                document.getElementById('wheelBox').classList.add('wheel-small');
+                // বাজি ধরার বাটন এবং চিপস বাটন একসাথে সচল
+                toggleControls(true);
             } else {
                 if(!isSpinning && (sec === 15 || sec === 45)) {
-                    document.getElementById('wheelBox').classList.remove('wheel-small');
-                    
-                    const betArea = document.getElementById('betArea');
-                    betArea.classList.add('disabled');
-                    document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('bet-active'));
-                    
+                    toggleControls(false); // সবকিছু লক করা
                     triggerResult();
                 }
                 document.getElementById('timer').innerText = "0";
             }
         }, 1000);
+    }
+
+    function toggleControls(active) {
+        const betArea = document.getElementById('betArea');
+        const chipTrigger = document.getElementById('chipTrigger');
+        const wheelBox = document.getElementById('wheelBox');
+
+        if(active && !isSpinning) {
+            betArea.classList.remove('disabled');
+            chipTrigger.classList.remove('disabled');
+            document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.add('bet-active'));
+            wheelBox.classList.add('wheel-small');
+        } else {
+            betArea.classList.add('disabled');
+            chipTrigger.classList.add('disabled');
+            document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('bet-active'));
+            wheelBox.classList.remove('wheel-small');
+            document.getElementById('chipArea').style.display = 'none';
+        }
     }
 
     async function placeBet(col) {
@@ -256,7 +243,7 @@
 
     async function triggerResult() {
         isSpinning = true;
-        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> SPINNING...`;
+        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> ঘুরছে...`;
         try {
             const res = await fetch(`${SCRIPT_URL}?action=processWinner&username=${activeUser}`);
             const data = await res.json();
@@ -268,12 +255,8 @@
             setTimeout(() => {
                 activeBal = data.newBalance;
                 document.getElementById('bal').innerText = activeBal;
-                document.getElementById('status').innerHTML = `<i class="fas fa-trophy"></i> WINNER: ${data.winner}`;
-                
-                setTimeout(() => {
-                    isSpinning = "done";
-                }, 5000); 
-
+                document.getElementById('status').innerHTML = `<i class="fas fa-trophy"></i> বিজয়ী: ${data.winner}`;
+                setTimeout(() => { isSpinning = "done"; }, 5000);
             }, 20000); 
         } catch(e) { console.error("Error"); }
     }
@@ -286,9 +269,7 @@
         document.getElementById('gT').innerText = "৳0";
         document.getElementById('wheel').style.transition = "none";
         document.getElementById('wheel').style.transform = `rotate(${rotation % 360}deg)`;
-        setTimeout(() => {
-            document.getElementById('wheel').style.transition = "transform 20s cubic-bezier(0.15, 0, 0.15, 1)";
-        }, 50);
+        setTimeout(() => { document.getElementById('wheel').style.transition = "transform 20s cubic-bezier(0.15, 0, 0.15, 1)"; }, 50);
     }
 </script>
 </body>
