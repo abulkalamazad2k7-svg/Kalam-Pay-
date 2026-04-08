@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kalam Wheel 2026 - Ultra Pro</title>
+    <title>Kalam Spin 2026 - Pro Update</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
@@ -27,13 +27,13 @@
             padding: 20px; border: none;
         }
 
+        /* লগইন সেকশন আপডেট */
         #loginSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             z-index:10000; display:flex; flex-direction:column; align-items:center;
         }
         .login-header-area { text-align:center; color:white; padding: 70px 0 30px; }
-        .login-header-area i { font-size: 50px; margin-bottom: 10px; }
         .login-card { 
             background: white; border-radius: 20px; padding: 25px; 
             box-shadow: var(--shadow); width: 85%; color: #333;
@@ -50,36 +50,46 @@
             font-size: 16px; transition: 0.3s;
         }
 
-        #offSection { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background:#1a1a2e; z-index:10001; 
-            display:flex; flex-direction:column; justify-content:center; align-items:center; 
-        }
-
-        .game-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            color: #ffd700; font-weight: bold; padding: 10px 5px; font-size: 16px; 
-        }
-
+        .game-header { display: flex; justify-content: space-between; align-items: center; color: #ffd700; font-weight: bold; padding: 10px 5px; }
         .wheel-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .wheel-box { position: relative; width: 280px; height: 280px; }
+        
+        .wheel-box { 
+            position: relative; width: 280px; height: 280px; 
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .wheel-small { transform: scale(0.7); }
+
         .wheel-img { 
             width: 100%; height: 100%; border-radius: 50%; border: 10px solid #ffd700; 
             background: conic-gradient(#ff4757 0deg 120deg, #2f3542 120deg 240deg, #2ed573 240deg 360deg); 
-            transition: transform 7s cubic-bezier(0.15, 0, 0.15, 1); 
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            transition: transform 20s cubic-bezier(0.15, 0, 0.15, 1); 
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
         }
+        
         .wheel-pointer { 
             position: absolute; top: -20px; left: 50%; transform: translateX(-50%); 
             width: 0; height: 0; border-left: 20px solid transparent; 
             border-right: 20px solid transparent; border-top: 35px solid #ffd700; z-index: 10; 
         }
 
+        @keyframes pulseBet {
+            0% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
+        }
+
         .bet-buttons { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px; }
         .bet-btn { 
             flex: 1; padding: 20px 5px; border-radius: 20px; color: white; 
-            font-weight: bold; border: 2px solid rgba(255,255,255,0.2); cursor: pointer;
-            transition: 0.2s; font-size: 14px; text-align: center;
+            font-weight: bold; border: 3px solid rgba(255,255,255,0.3); cursor: pointer;
+            font-size: 14px; text-align: center; transition: all 0.4s ease;
+        }
+
+        .bet-active { 
+            animation: pulseBet 1.5s infinite; 
+            border-color: #ffd700 !important;
+            opacity: 1 !important;
+            filter: grayscale(0) !important;
         }
 
         .footer-info { 
@@ -87,49 +97,33 @@
             display: flex; justify-content: space-between; align-items: center; 
             border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;
         }
-        .chip-selector { 
-            background: #fff; color: #241468; padding: 12px 20px; border-radius: 30px; 
-            font-weight: bold; cursor: pointer; border: 2px solid #ffd700; 
-            display: flex; align-items: center; gap: 10px; font-size: 16px;
-        }
+        .chip-selector { background: #fff; color: #241468; padding: 12px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; border: 2px solid #ffd700; display: flex; align-items: center; gap: 10px; }
 
-        .chip-menu { 
-            position: absolute; bottom: 120px; right: 25px; 
-            display: none; flex-direction: column; gap: 10px; z-index: 100; 
-        }
-        .chip { 
-            width: 60px; height: 60px; border-radius: 50%; background: white; 
-            color: #241468; display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; cursor: pointer; border: 3px solid #ffd700; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-size: 14px;
-        }
+        .chip-menu { position: absolute; bottom: 120px; right: 25px; display: none; flex-direction: column; gap: 10px; z-index: 100; }
+        .chip { width: 60px; height: 60px; border-radius: 50%; background: white; color: #241468; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 3px solid #ffd700; }
 
         .hidden { display: none !important; }
-        .disabled { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
+        .disabled { opacity: 0.4; pointer-events: none; filter: grayscale(0.8); }
     </style>
 </head>
 <body>
 
 <div class="game-container">
-    <div id="offSection" class="hidden">
-        <h2 id="offNotice" style="color:#ffd700; padding:20px; text-align:center;">লোড হচ্ছে...</h2>
-    </div>
-
     <div id="loginSection">
         <div class="login-header-area">
-            <i class="fas fa-paper-plane"></i>
-            <h1 style="font-size: 30px; margin:0; letter-spacing: 1px;">কালাম পে লগইন</h1>
+            <i class="fas fa-sync-alt" style="font-size: 50px;"></i>
+            <h1 style="font-size: 30px; margin:10px 0; letter-spacing: 1px;">কালাম স্পিন লগইন</h1>
         </div>
         <div class="login-card">
             <div class="input-group">
-                <label>মোবাইল নম্বর / ইউজার আইডি</label>
+                <label>মোবাইল নাম্বার / ইউজার আইডি</label>
                 <input type="text" id="uid" placeholder="01XXXXXXXXX">
             </div>
             <div class="input-group">
-                <label>পিন নম্বর</label>
+                <label>পিন নাম্বার</label>
                 <input type="password" id="pin" placeholder="******">
             </div>
-            <button class="btn-main" onclick="processLogin()">প্রবেশ করুন</button>
+            <button class="btn-main" onclick="processLogin()">লগইন করুন</button>
             <p id="msg" style="text-align:center; font-size:13px; margin-top:10px; color:#ff4757;"></p>
         </div>
     </div>
@@ -140,13 +134,13 @@
     </div>
 
     <div class="wheel-area">
-        <div class="wheel-box">
+        <div id="wheelBox" class="wheel-box">
             <div class="wheel-pointer"></div>
             <div id="wheel" class="wheel-img"></div>
         </div>
     </div>
 
-    <div id="betArea" class="bet-buttons">
+    <div id="betArea" class="bet-buttons disabled">
         <button id="btnRED" class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">
             RED <br> <small id="rT">৳0</small>
         </button>
@@ -161,8 +155,8 @@
     <div id="chipArea" class="chip-menu"></div>
 
     <div class="footer-info">
-        <div style="text-align: left;">
-            <small style="color:#aaa; letter-spacing:1px;">MY BALANCE</small>
+        <div>
+            <small style="color:#aaa;">MY BALANCE</small>
             <div style="font-size:22px; font-weight:800; color:#ffd700;">৳<span id="bal">0</span></div>
         </div>
         <div id="chipTrigger" class="chip-selector" onclick="toggleChipMenu()">
@@ -172,60 +166,37 @@
 </div>
 
 <script>
-    // আপনার আপডেট করা সিকিউর URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTq_5tqo2p5-RAw4UiEQYRMBFHZJ6euteFsZkS_xCzByo5AhSW6GD4fjWUQ6A8BSa1/exec";
     
     let activeUser = "", activeBal = 0, selectedChip = 10, isSpinning = false, rotation = 0;
     let localBets = { RED: 0, BLACK: 0, GREEN: 0 };
-    let engineRunning = false;
 
-    // ১. সুপার ফাস্ট লগইন
     async function processLogin() {
         const u = document.getElementById('uid').value, p = document.getElementById('pin').value;
         if(!u || !p) return;
-        
         const msg = document.getElementById('msg');
         msg.innerText = "যাচাই করা হচ্ছে...";
-        
         try {
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${u}&password=${p}`);
             const data = await res.json();
-            
             if(data.status === "success") {
-                activeUser = u; 
-                activeBal = data.balance;
+                activeUser = u; activeBal = data.balance;
                 document.getElementById('bal').innerText = activeBal;
                 document.getElementById('loginSection').classList.add('hidden');
                 initGame();
-            } else {
-                msg.innerText = "ভুল আইডি বা পিন!";
-            }
-        } catch(e) { 
-            msg.innerText = "সার্ভার সংযোগে ত্রুটি!"; 
-        }
+            } else { msg.innerText = "ভুল আইডি বা পিন!"; }
+        } catch(e) { msg.innerText = "সার্ভার সংযোগ বিফল!"; }
     }
 
-    // ২. গেম সেটিংস ও চিপস রেন্ডার
     async function initGame() {
-        if(engineRunning) return;
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getSettings`);
             const data = await res.json();
-            
-            if(data.status === "OFF") {
-                document.getElementById('offSection').classList.remove('hidden');
-                document.getElementById('offNotice').innerText = data.notice;
-                return;
-            }
-            
-            const chipMenu = document.getElementById('chipArea');
-            chipMenu.innerHTML = data.chips.map((val, i) => 
+            document.getElementById('chipArea').innerHTML = data.chips.map((val, i) => 
                 `<div class="chip" onclick="setChip(${val}, '${data.displayChips[i]}')">${data.displayChips[i]}</div>`
             ).join('');
-            
             startCycle();
-            engineRunning = true;
-        } catch(e) { console.error("Setting Load Failed"); }
+        } catch(e) { console.error("Load Failed"); }
     }
 
     function setChip(v, label) {
@@ -241,7 +212,6 @@
         }
     }
 
-    // ৩. রিয়েল-টাইম ইঞ্জিন (সময় আপডেট সহ)
     function startCycle() {
         setInterval(() => {
             const now = new Date();
@@ -251,56 +221,61 @@
             let timeRemaining = isBetTime ? (sec < 15 ? 15 - sec : 45 - sec) : 0;
 
             if (isBetTime) {
-                if(isSpinning) resetUI();
+                if(isSpinning === "done") resetUI(); 
                 document.getElementById('timer').innerText = timeRemaining;
-                document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> বাজি ধরুন`;
-                document.getElementById('betArea').classList.remove('disabled');
+                document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> PLACE YOUR BET`;
+                
+                const betArea = document.getElementById('betArea');
+                betArea.classList.remove('disabled');
+                document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.add('bet-active'));
+                
+                document.getElementById('wheelBox').classList.add('wheel-small');
             } else {
                 if(!isSpinning && (sec === 15 || sec === 45)) {
-                    document.getElementById('betArea').classList.add('disabled');
+                    document.getElementById('wheelBox').classList.remove('wheel-small');
+                    
+                    const betArea = document.getElementById('betArea');
+                    betArea.classList.add('disabled');
+                    document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('bet-active'));
+                    
                     triggerResult();
                 }
                 document.getElementById('timer').innerText = "0";
             }
-            
-            // ২০২৬ নতুন: প্রতি ৫ সেকেন্ডে শিটের E5 সময় আপডেট করা
-            if(sec % 5 === 0) fetch(`${SCRIPT_URL}?action=getSettings`);
-
         }, 1000);
     }
 
-    // ৪. বেট প্লেসিং
     async function placeBet(col) {
         if(isSpinning || activeBal < selectedChip) return;
-        
         activeBal -= selectedChip;
         localBets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
         document.getElementById(col === 'RED' ? 'rT' : col === 'BLACK' ? 'bT' : 'gT').innerText = "৳" + localBets[col];
-        
         fetch(`${SCRIPT_URL}?action=placeBet&username=${activeUser}&amount=${selectedChip}&colorName=${col}`);
     }
 
-    // ৫. ফলাফল ও স্পিন
     async function triggerResult() {
         isSpinning = true;
-        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> ফলাফল আসছে...`;
-        
+        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> SPINNING...`;
         try {
             const res = await fetch(`${SCRIPT_URL}?action=processWinner&username=${activeUser}`);
             const data = await res.json();
-            
             let targetDeg = (data.winner === "RED") ? 60 : (data.winner === "BLACK") ? 180 : 300;
-            rotation = rotation + (360 * 10) + (360 - (rotation % 360)) - targetDeg;
+            
+            rotation = rotation + (360 * 8) + (360 - (rotation % 360)) - targetDeg;
             document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
 
             setTimeout(() => {
                 activeBal = data.newBalance;
                 document.getElementById('bal').innerText = activeBal;
-                document.getElementById('status').innerHTML = `<i class="fas fa-trophy"></i> বিজয়ী: ${data.winner}`;
-            }, 7000); 
-            
-        } catch(e) { console.error("Result Fetch Error"); }
+                document.getElementById('status').innerHTML = `<i class="fas fa-trophy"></i> WINNER: ${data.winner}`;
+                
+                setTimeout(() => {
+                    isSpinning = "done";
+                }, 5000); 
+
+            }, 20000); 
+        } catch(e) { console.error("Error"); }
     }
 
     function resetUI() {
@@ -312,7 +287,7 @@
         document.getElementById('wheel').style.transition = "none";
         document.getElementById('wheel').style.transform = `rotate(${rotation % 360}deg)`;
         setTimeout(() => {
-            document.getElementById('wheel').style.transition = "transform 7s cubic-bezier(0.15, 0, 0.15, 1)";
+            document.getElementById('wheel').style.transition = "transform 20s cubic-bezier(0.15, 0, 0.15, 1)";
         }, 50);
     }
 </script>
