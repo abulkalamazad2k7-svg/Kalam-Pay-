@@ -6,7 +6,7 @@
     <title>Kalam Wheel 2026 - Ultra Fullscreen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* আপনার সিগনেচার ডিজাইন সেটআপ - কোন পরিবর্তন করা হয়নি */
+        /* আপনার সিগনেচার ডিজাইন সেটআপ */
         * { box-sizing: border-box; }
         :root {
             --primary: #0093E9;
@@ -115,7 +115,7 @@
 
 <div class="game-container">
     <div id="offSection" class="hidden">
-        <h2 id="offNotice" style="color:#ffd700; padding:20px; text-align:center;"></h2>
+        <h2 id="offNotice" style="color:#ffd700; padding:20px; text-align:center; font-size: 24px;"></h2>
     </div>
 
     <div id="loginSection">
@@ -150,13 +150,13 @@
     </div>
 
     <div id="betArea" class="bet-buttons">
-        <button class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">
+        <button id="btnRED" class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">
             RED <br> <small id="rT">৳0</small>
         </button>
-        <button class="bet-btn" style="background:#2f3542" onclick="placeBet('BLACK')">
+        <button id="btnBLACK" class="bet-btn" style="background:#2f3542" onclick="placeBet('BLACK')">
             BLACK <br> <small id="bT">৳0</small>
         </button>
-        <button class="bet-btn" style="background:#2ed573" onclick="placeBet('GREEN')">
+        <button id="btnGREEN" class="bet-btn" style="background:#2ed573" onclick="placeBet('GREEN')">
             GREEN <br> <small id="gT">৳0</small>
         </button>
     </div>
@@ -175,12 +175,12 @@
 </div>
 
 <script>
-    // আপনার নতুন এবং সিকিউর ইউআরএল (URL)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfAI4atlD47iuDbvs0qMfCqTdRqwj7OsecW0d8Y1HPGsKbbhcnj98-wzllSKtXh5Ie9w/exec";
+    // আপনার আপডেট করা URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxER5aU8SHNoxU5-MeJ34ECPfYbxrqhJt8UKsvngN4CkEDO52k7bQVoAr17Z4lZL7EFtQ/exec";
     
     let activeUser = "", activeBal = 0, selectedChip = 10, isSpinning = false, rotation = 0;
     let localBets = { RED: 0, BLACK: 0, GREEN: 0 };
-    let cfg = { betTime: 20, spinTime: 7 };
+    let cfg = { betTime: 15, spinTime: 5 }; // আপনার রিকোয়েস্ট অনুযায়ী ১৫ সেকেন্ড বেট টাইম
 
     async function processLogin() {
         const u = document.getElementById('uid').value, p = document.getElementById('pin').value;
@@ -215,9 +215,7 @@
                 return;
             }
             
-            cfg = data;
-            
-            // J2-J6 চিপস বাটন রেন্ডার (K ফরম্যাটসহ)
+            // চিপস বাটন রেন্ডার (I2-I6 ডাটা অনুযায়ী)
             const chipMenu = document.getElementById('chipArea');
             chipMenu.innerHTML = data.chips.map((val, i) => 
                 `<div class="chip" onclick="setChip(${val}, '${data.displayChips[i]}')">${data.displayChips[i]}</div>`
@@ -243,17 +241,19 @@
     function startEngine() {
         setInterval(() => {
             const now = new Date();
-            let totalCycle = cfg.betTime + 10; 
-            let sec = now.getSeconds() % totalCycle;
+            let sec = now.getSeconds() % 30; // প্রতি মিনিটে ২ বার খেলা (৩০ সেকেন্ড সাইকেল)
 
-            if (sec < cfg.betTime) {
+            if (sec < 15) { // প্রথম ১৫ সেকেন্ড বাজি ধরার সময়
                 if(isSpinning) resetUI();
-                document.getElementById('timer').innerText = cfg.betTime - sec;
+                document.getElementById('timer').innerText = 15 - sec;
                 document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> PLACE BETS`;
                 document.getElementById('betArea').classList.remove('disabled');
-            } else if (sec === cfg.betTime && !isSpinning) {
+            } else if (sec === 15 && !isSpinning) { // ১৫ সেকেন্ড পার হলে স্পিন শুরু
                 document.getElementById('betArea').classList.add('disabled');
                 runSpin();
+            } else {
+                // স্পিন চলাকালীন টাইম দেখানো (৫ সেকেন্ড ক্যালকুলেশন)
+                if(!isSpinning) document.getElementById('timer').innerText = "--";
             }
         }, 1000);
     }
@@ -261,12 +261,13 @@
     async function runSpin() {
         isSpinning = true;
         document.getElementById('chipArea').style.display = 'none';
-        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> SPINNING...`;
+        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> CALCULATING...`;
         
         try {
             const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "processWinner", username: activeUser }) });
             const data = await res.json();
             
+            // হুইল ঘোরানোর লজিক
             let targetDeg = (data.winner === "RED") ? 60 : (data.winner === "BLACK") ? 180 : 300;
             rotation = rotation + (360 * 5) + (360 - (rotation % 360)) - targetDeg;
             document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
@@ -275,23 +276,18 @@
                 activeBal = data.newBalance; 
                 document.getElementById('bal').innerText = activeBal;
                 document.getElementById('status').innerHTML = `<i class="fas fa-flag-checkered"></i> WINNER: ${data.winner}`;
-            }, cfg.spinTime * 1000);
+            }, 5000); // ৫ সেকেন্ড পর রেজাল্ট ঘোষণা
         } catch(e) { console.log("Spin Error"); }
     }
 
     async function placeBet(col) {
-        if(isSpinning) return;
+        if(isSpinning || activeBal < selectedChip) return;
         
-        // ব্যালেন্স ও ১০ লাখের লিমিট চেক
-        if(activeBal < selectedChip) return;
-        if(selectedChip < 10 || selectedChip > 1000000) return;
-
         activeBal -= selectedChip;
         localBets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
         document.getElementById(col === 'RED' ? 'rT' : col === 'BLACK' ? 'bT' : 'gT').innerText = "৳" + localBets[col];
 
-        // লাইভ ডেটা পাঠানো
         fetch(SCRIPT_URL, { 
             method: 'POST', 
             body: JSON.stringify({ action: "placeBet", username: activeUser, amount: selectedChip, colorName: col }) 
@@ -304,6 +300,8 @@
         document.getElementById('rT').innerText = "৳0"; 
         document.getElementById('bT').innerText = "৳0"; 
         document.getElementById('gT').innerText = "৳0"; 
+        document.getElementById('wheel').style.transition = "none";
+        // হুইল পজিশন রিসেট না করে পরের স্পিনের জন্য রাখা হয়েছে সৌন্দর্যের জন্য
     }
 </script>
 </body>
