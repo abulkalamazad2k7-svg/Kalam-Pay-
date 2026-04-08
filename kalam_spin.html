@@ -6,7 +6,7 @@
     <title>Kalam Wheel 2026 - Ultra Fullscreen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Full Display Setup */
+        /* আপনার সিগনেচার ডিজাইন সেটআপ */
         * { box-sizing: border-box; }
         :root {
             --primary: #0093E9;
@@ -28,7 +28,6 @@
             padding: 20px; border: none;
         }
 
-        /* --- LOGIN STYLE --- */
         #loginSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
@@ -58,13 +57,11 @@
             display:flex; flex-direction:column; justify-content:center; align-items:center; 
         }
 
-        /* Header */
         .game-header { 
             display: flex; justify-content: space-between; align-items: center; 
             color: #ffd700; font-weight: bold; padding: 10px 5px; font-size: 16px; 
         }
 
-        /* Wheel Area */
         .wheel-area { 
             flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
         }
@@ -81,15 +78,13 @@
             border-right: 20px solid transparent; border-top: 35px solid #ffd700; z-index: 10; 
         }
 
-        /* Bet Buttons */
         .bet-buttons { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px; }
         .bet-btn { 
             flex: 1; padding: 20px 5px; border-radius: 20px; color: white; 
             font-weight: bold; border: 2px solid rgba(255,255,255,0.2); cursor: pointer;
-            transition: 0.2s; font-size: 14px;
+            transition: 0.2s; font-size: 14px; text-align: center;
         }
 
-        /* Footer Info */
         .footer-info { 
             background: rgba(0,0,0,0.6); padding: 20px; border-radius: 25px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -107,19 +102,18 @@
         }
         .chip { 
             width: 60px; height: 60px; border-radius: 50%; background: white; 
-            color: #241468; display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; cursor: pointer; border: 3px solid #9f73ab; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            color: #241468 !important; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; cursor: pointer; border: 3px solid #ffd700; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-size: 14px;
         }
 
         .hidden { display: none !important; }
-        .disabled { opacity: 0.5; pointer-events: none; }
+        .disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
 <body>
 
 <div class="game-container">
-
     <div id="offSection" class="hidden">
         <h2 id="offNotice" style="color:#ffd700; padding:20px; text-align:center;"></h2>
     </div>
@@ -181,13 +175,12 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzbZQnhj_6FuBStg6XYVLiNT2qQnXWvSCuWESSvm_yK24SmPFGNAebBy8xD03UwQs/exec";
+    // আপনার নতুন স্ক্রিপ্ট ইউআরএল
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2252wTaJ8IMcp3RQSJfRoGL1GTTac4e6GX-IJEbbg6_SmvPovSSFzwlrUO948cfSPUw/exec";
+    
     let activeUser = "", activeBal = 0, selectedChip = 10, isSpinning = false, rotation = 0;
-    let bets = { RED: 0, BLACK: 0, GREEN: 0 };
+    let localBets = { RED: 0, BLACK: 0, GREEN: 0 };
     let cfg = { betTime: 20, spinTime: 7 };
-
-    const MIN_BET = 10;
-    const MAX_BET = 1000000;
 
     async function processLogin() {
         const u = document.getElementById('uid').value, p = document.getElementById('pin').value;
@@ -198,6 +191,7 @@
         try {
             const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
             const data = await res.json();
+            
             if(data.status === "success") {
                 activeUser = u; activeBal = data.balance;
                 document.getElementById('bal').innerText = activeBal;
@@ -205,26 +199,32 @@
                 loadSettings();
             } else { 
                 document.getElementById('msg').style.color = "#ff4757";
-                document.getElementById('msg').innerText = "ভুল আইডি বা পিন!"; 
+                document.getElementById('msg').innerText = data.reason || "ভুল আইডি বা পিন!"; 
             }
-        } catch(e) {
-            document.getElementById('msg').innerText = "নেটওয়ার্ক এরর!";
-        }
+        } catch(e) { document.getElementById('msg').innerText = "সার্ভার এরর!"; }
     }
 
     async function loadSettings() {
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "getSettings" }) });
-        const data = await res.json();
-        if(data.status === "OFF") {
-            document.getElementById('offSection').classList.remove('hidden');
-            document.getElementById('offNotice').innerText = data.notice;
-            return;
-        }
-        cfg = data;
-        document.getElementById('chipArea').innerHTML = data.chips
-        .filter(v => v >= MIN_BET && v <= MAX_BET)
-        .map(v => `<div class="chip" onclick="setChip(${v})">${v}</div>`).join('');
-        startEngine();
+        try {
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "getSettings" }) });
+            const data = await res.json();
+            
+            if(data.status === "OFF") {
+                document.getElementById('offSection').classList.remove('hidden');
+                document.getElementById('offNotice').innerText = data.notice;
+                return;
+            }
+            
+            cfg = data;
+            
+            // J2-J6 চিপস বাটন রেন্ডার (K ফরম্যাটসহ)
+            const chipMenu = document.getElementById('chipArea');
+            chipMenu.innerHTML = data.chips.map((val, i) => 
+                `<div class="chip" onclick="setChip(${val}, '${data.displayChips[i]}')">${data.displayChips[i]}</div>`
+            ).join('');
+            
+            startEngine();
+        } catch(e) { console.log("Settings Load Error"); }
     }
 
     function toggleChipMenu() { 
@@ -234,17 +234,14 @@
         } 
     }
 
-    function setChip(v) { 
-        if(v < MIN_BET) v = MIN_BET;
-        if(v > MAX_BET) v = MAX_BET;
-
+    function setChip(v, label) { 
         selectedChip = v; 
-        document.getElementById('selectedVal').innerText = "৳"+v; 
-        document.getElementById('chipArea').style.display='none'; 
+        document.getElementById('selectedVal').innerText = "৳" + label; 
+        document.getElementById('chipArea').style.display = 'none'; 
     }
 
     function startEngine() {
-        setInterval(async () => {
+        setInterval(() => {
             const now = new Date();
             let totalCycle = cfg.betTime + 10; 
             let sec = now.getSeconds() % totalCycle;
@@ -266,52 +263,40 @@
         document.getElementById('chipArea').style.display = 'none';
         document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> SPINNING...`;
         
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "processWinner", username: activeUser }) });
-        const data = await res.json();
-        
-        let targetDeg = (data.winner === "RED") ? 60 : (data.winner === "BLACK") ? 180 : 300;
-        rotation = rotation + (360 * 5) + (360 - (rotation % 360)) - targetDeg;
-        document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
+        try {
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "processWinner", username: activeUser }) });
+            const data = await res.json();
+            
+            let targetDeg = (data.winner === "RED") ? 60 : (data.winner === "BLACK") ? 180 : 300;
+            rotation = rotation + (360 * 5) + (360 - (rotation % 360)) - targetDeg;
+            document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
 
-        setTimeout(() => {
-            activeBal = data.newBalance;
-            document.getElementById('bal').innerText = activeBal;
-            document.getElementById('status').innerHTML = `<i class="fas fa-flag-checkered"></i> FINISHED`;
-        }, cfg.spinTime * 1000);
+            setTimeout(() => {
+                activeBal = data.newBalance; 
+                document.getElementById('bal').innerText = activeBal;
+                document.getElementById('status').innerHTML = `<i class="fas fa-flag-checkered"></i> WINNER: ${data.winner}`;
+            }, cfg.spinTime * 1000);
+        } catch(e) { console.log("Spin Error"); }
     }
 
     async function placeBet(col) {
-        if(isSpinning) return;
-
-        if(selectedChip < MIN_BET || selectedChip > MAX_BET) {
-            document.getElementById('chipArea').style.display='none';
-            alert("বেট লিমিট: সর্বনিম্ন ৳10 এবং সর্বোচ্চ ৳10,00,000");
-            return;
-        }
-
-        if(activeBal < selectedChip) return;
-
-        const code = (col === 'RED') ? '1' : (col === 'BLACK') ? '2' : '3';
-
-        await fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            body: JSON.stringify({ 
-                action: "placeBet", 
-                username: activeUser, 
-                amount: selectedChip, 
-                colorCode: code 
-            }) 
-        });
+        if(isSpinning || activeBal < selectedChip) return;
 
         activeBal -= selectedChip;
-        bets[col] += selectedChip;
+        localBets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
-        document.getElementById(col === 'RED' ? 'rT' : col === 'BLACK' ? 'bT' : 'gT').innerText = "৳" + bets[col];
+        document.getElementById(col === 'RED' ? 'rT' : col === 'BLACK' ? 'bT' : 'gT').innerText = "৳" + localBets[col];
+
+        // ব্যাক-এন্ডে লাইভ ট্র্যাকিং আপডেট
+        fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ action: "placeBet", username: activeUser, amount: selectedChip, colorName: col }) 
+        });
     }
 
     function resetUI() { 
         isSpinning = false; 
-        bets = { RED: 0, BLACK: 0, GREEN: 0 }; 
+        localBets = { RED: 0, BLACK: 0, GREEN: 0 }; 
         document.getElementById('rT').innerText = "৳0"; 
         document.getElementById('bT').innerText = "৳0"; 
         document.getElementById('gT').innerText = "৳0"; 
