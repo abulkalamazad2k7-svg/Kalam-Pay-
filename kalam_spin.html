@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kalam Spin 2026 - Final Stable</title>
+    <title>Kalam Spin 2026 - Final</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
@@ -25,7 +25,7 @@
             display: flex; flex-direction: column; position: relative; padding: 20px;
         }
 
-        /* লগইন সেকশন */
+        /* লগইন সেকশন বাংলায় */
         #loginSection { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
@@ -39,7 +39,7 @@
             animation: slowSpin 5s linear infinite; text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
 
-        .login-card { background: white; border-radius: 20px; padding: 25px; width: 85%; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .login-card { background: white; border-radius: 20px; padding: 25px; width: 85%; color: #333; }
         .input-group { margin-bottom: 15px; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; font-size: 16px; outline: none; }
         .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
@@ -58,33 +58,19 @@
         
         .wheel-pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--gold); z-index: 10; }
 
-        /* বেটিং বাটন অ্যানিমেশন */
-        @keyframes betGlow {
-            0% { box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
-            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
-            100% { box-shadow: 0 0 0px rgba(255, 215, 0, 0); }
-        }
+        #betMsg { text-align: center; height: 20px; color: #ff4757; font-size: 14px; font-weight: bold; margin-bottom: 10px; visibility: hidden; }
 
-        .bet-buttons { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px; }
+        .bet-buttons { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
         .bet-btn { 
             flex: 1; padding: 20px 5px; border-radius: 15px; color: white; font-weight: bold; 
             border: 2px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; transition: 0.3s;
         }
 
-        /* যখন বাজি ধরা সচল */
-        .bet-active { 
-            animation: betGlow 1.5s infinite; 
-            border-color: var(--gold) !important; 
-            opacity: 1 !important; 
-            filter: grayscale(0) !important;
-            pointer-events: auto !important;
-        }
-
-        /* যখন বন্ধ */
+        .bet-active { border-color: var(--gold) !important; opacity: 1 !important; filter: grayscale(0) !important; pointer-events: auto !important; }
         .disabled { opacity: 0.25; pointer-events: none !important; filter: grayscale(1); }
 
-        .footer-info { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .chip-selector { background: #fff; color: #241468; padding: 10px 18px; border-radius: 30px; font-weight: bold; cursor: pointer; border: 2px solid var(--gold); transition: 0.3s; }
+        .footer-info { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .chip-selector { background: #fff; color: #241468; padding: 10px 18px; border-radius: 30px; font-weight: bold; cursor: pointer; border: 2px solid var(--gold); }
         .chip-menu { position: absolute; bottom: 100px; right: 25px; display: none; flex-direction: column; gap: 8px; z-index: 100; }
         .chip { width: 55px; height: 55px; border-radius: 50%; background: white; color: #241468; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 3px solid var(--gold); }
 
@@ -97,22 +83,18 @@
     <div id="loginSection">
         <div class="login-header-area">
             <i class="fas fa-dharmachakra"></i>
-            <h1 style="color:white; font-size: 30px; margin-top: 10px;">কালাম স্পিন লগইন</h1>
+            <h1 style="color:white; font-size: 28px; margin-top: 10px;">কালাম স্পিন লগইন</h1>
         </div>
         <div class="login-card">
-            <div class="input-group">
-                <input type="text" id="uid" placeholder="ইউজার আইডি / মোবাইল">
-            </div>
-            <div class="input-group">
-                <input type="password" id="pin" placeholder="সিক্রেট পিন">
-            </div>
+            <div class="input-group"><input type="text" id="uid" placeholder="ইউজার আইডি"></div>
+            <div class="input-group"><input type="password" id="pin" placeholder="সিক্রেট পিন"></div>
             <button class="btn-main" onclick="processLogin()">প্রবেশ করুন</button>
-            <p id="msg" style="text-align:center; font-size:12px; margin-top:10px; color:red;"></p>
+            <p id="msg" style="text-align:center; font-size:12px; color:red;"></p>
         </div>
     </div>
 
     <div class="game-header">
-        <span id="status">লোড হচ্ছে...</span>
+        <span id="status">Loading...</span>
         <span><i class="fas fa-clock"></i> <span id="timer">00</span>s</span>
     </div>
 
@@ -122,6 +104,8 @@
             <div id="wheel" class="wheel-img"></div>
         </div>
     </div>
+
+    <div id="betMsg">বেট গ্রহণযোগ্য নয়</div>
 
     <div id="betArea" class="bet-buttons disabled">
         <button id="btnRED" class="bet-btn" style="background:#ff4757" onclick="placeBet('RED')">RED<br><small id="rT">৳0</small></button>
@@ -156,11 +140,11 @@
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${u}&password=${p}`);
             const data = await res.json();
             if(data.status === "success") {
-                activeUser = u; activeBal = data.balance;
+                activeUser = u; activeBal = parseFloat(data.balance);
                 document.getElementById('bal').innerText = activeBal;
                 document.getElementById('loginSection').classList.add('hidden');
                 initGame();
-            } else { document.getElementById('msg').innerText = "ইউজার বা পিন ভুল!"; }
+            } else { document.getElementById('msg').innerText = "ভুল আইডি বা পিন!"; }
         } catch(e) { document.getElementById('msg').innerText = "সার্ভার এরর!"; }
     }
 
@@ -172,7 +156,7 @@
                 `<div class="chip" onclick="setChip(${val}, '${data.displayChips[i]}')">${data.displayChips[i]}</div>`
             ).join('');
             startCycle();
-        } catch(e) { console.error("Load Failed"); }
+        } catch(e) { }
     }
 
     function setChip(v, label) {
@@ -191,21 +175,17 @@
     function startCycle() {
         setInterval(() => {
             const sec = new Date().getSeconds();
-            
-            // ১৫ সেকেন্ড সময় (০-১৫ এবং ৩০-৪৫)
             let isBetTime = (sec >= 0 && sec < 15) || (sec >= 30 && sec < 45);
             let timeRem = isBetTime ? (sec < 15 ? 15 - sec : 45 - sec) : 0;
 
             if (isBetTime) {
                 if(isSpinning === "done") resetUI(); 
                 document.getElementById('timer').innerText = timeRem;
-                document.getElementById('status').innerHTML = `<i class="fas fa-coins"></i> বাজি ধরুন`;
-                
-                // বাজি ধরার বাটন এবং চিপস বাটন একসাথে সচল
+                document.getElementById('status').innerHTML = `PLACE YOUR BET`;
                 toggleControls(true);
             } else {
                 if(!isSpinning && (sec === 15 || sec === 45)) {
-                    toggleControls(false); // সবকিছু লক করা
+                    toggleControls(false); 
                     triggerResult();
                 }
                 document.getElementById('timer').innerText = "0";
@@ -216,24 +196,35 @@
     function toggleControls(active) {
         const betArea = document.getElementById('betArea');
         const chipTrigger = document.getElementById('chipTrigger');
-        const wheelBox = document.getElementById('wheelBox');
-
         if(active && !isSpinning) {
             betArea.classList.remove('disabled');
             chipTrigger.classList.remove('disabled');
             document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.add('bet-active'));
-            wheelBox.classList.add('wheel-small');
         } else {
             betArea.classList.add('disabled');
             chipTrigger.classList.add('disabled');
             document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('bet-active'));
-            wheelBox.classList.remove('wheel-small');
-            document.getElementById('chipArea').style.display = 'none';
+            document.getElementById('betMsg').style.visibility = 'hidden';
         }
     }
 
     async function placeBet(col) {
-        if(isSpinning || activeBal < selectedChip) return;
+        const errDisplay = document.getElementById('betMsg');
+        
+        // ১০ টাকার কম হলে বাজি গ্রহণযোগ্য নয়
+        if (activeBal < 10) {
+            errDisplay.innerText = "বেট গ্রহণযোগ্য নয়";
+            errDisplay.style.visibility = 'visible';
+            return;
+        }
+
+        if (activeBal < selectedChip) {
+            errDisplay.innerText = "ব্যালেন্স পর্যাপ্ত নয়";
+            errDisplay.style.visibility = 'visible';
+            return;
+        }
+
+        errDisplay.style.visibility = 'hidden';
         activeBal -= selectedChip;
         localBets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
@@ -243,22 +234,20 @@
 
     async function triggerResult() {
         isSpinning = true;
-        document.getElementById('status').innerHTML = `<i class="fas fa-sync fa-spin"></i> ঘুরছে...`;
+        document.getElementById('status').innerHTML = `SPINNING...`;
         try {
             const res = await fetch(`${SCRIPT_URL}?action=processWinner&username=${activeUser}`);
             const data = await res.json();
             let targetDeg = (data.winner === "RED") ? 60 : (data.winner === "BLACK") ? 180 : 300;
-            
             rotation = rotation + (360 * 8) + (360 - (rotation % 360)) - targetDeg;
             document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
-
             setTimeout(() => {
-                activeBal = data.newBalance;
+                activeBal = parseFloat(data.newBalance);
                 document.getElementById('bal').innerText = activeBal;
-                document.getElementById('status').innerHTML = `<i class="fas fa-trophy"></i> বিজয়ী: ${data.winner}`;
+                document.getElementById('status').innerHTML = `WINNER: ${data.winner}`;
                 setTimeout(() => { isSpinning = "done"; }, 5000);
             }, 20000); 
-        } catch(e) { console.error("Error"); }
+        } catch(e) { }
     }
 
     function resetUI() {
