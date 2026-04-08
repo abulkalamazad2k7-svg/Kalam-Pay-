@@ -6,7 +6,7 @@
     <title>Kalam Wheel 2026 - Ultra Fullscreen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* আপনার সিগনেচার ডিজাইন সেটআপ */
+        /* আপনার সিগনেচার ডিজাইন সেটআপ - কোন পরিবর্তন করা হয়নি */
         * { box-sizing: border-box; }
         :root {
             --primary: #0093E9;
@@ -108,7 +108,7 @@
         }
 
         .hidden { display: none !important; }
-        .disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
+        .disabled { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
     </style>
 </head>
 <body>
@@ -175,8 +175,8 @@
 </div>
 
 <script>
-    // আপনার নতুন স্ক্রিপ্ট ইউআরএল
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2252wTaJ8IMcp3RQSJfRoGL1GTTac4e6GX-IJEbbg6_SmvPovSSFzwlrUO948cfSPUw/exec";
+    // আপনার নতুন এবং সিকিউর ইউআরএল (URL)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfAI4atlD47iuDbvs0qMfCqTdRqwj7OsecW0d8Y1HPGsKbbhcnj98-wzllSKtXh5Ie9w/exec";
     
     let activeUser = "", activeBal = 0, selectedChip = 10, isSpinning = false, rotation = 0;
     let localBets = { RED: 0, BLACK: 0, GREEN: 0 };
@@ -199,7 +199,7 @@
                 loadSettings();
             } else { 
                 document.getElementById('msg').style.color = "#ff4757";
-                document.getElementById('msg').innerText = data.reason || "ভুল আইডি বা পিন!"; 
+                document.getElementById('msg').innerText = "ভুল আইডি বা পিন!"; 
             }
         } catch(e) { document.getElementById('msg').innerText = "সার্ভার এরর!"; }
     }
@@ -280,14 +280,18 @@
     }
 
     async function placeBet(col) {
-        if(isSpinning || activeBal < selectedChip) return;
+        if(isSpinning) return;
+        
+        // ব্যালেন্স ও ১০ লাখের লিমিট চেক
+        if(activeBal < selectedChip) return;
+        if(selectedChip < 10 || selectedChip > 1000000) return;
 
         activeBal -= selectedChip;
         localBets[col] += selectedChip;
         document.getElementById('bal').innerText = activeBal;
         document.getElementById(col === 'RED' ? 'rT' : col === 'BLACK' ? 'bT' : 'gT').innerText = "৳" + localBets[col];
 
-        // ব্যাক-এন্ডে লাইভ ট্র্যাকিং আপডেট
+        // লাইভ ডেটা পাঠানো
         fetch(SCRIPT_URL, { 
             method: 'POST', 
             body: JSON.stringify({ action: "placeBet", username: activeUser, amount: selectedChip, colorName: col }) 
